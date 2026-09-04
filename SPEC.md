@@ -127,13 +127,13 @@ Episode Detail (push from podcast detail)
 
 ## 6. Development Phases
 
-| Phase | Features |
-|-------|----------|
-| **Phase 1** | Project setup, basic UI, audio playback |
-| **Phase 2** | RSS feed parsing, subscriptions |
-| **Phase 3** | Download management, offline mode |
-| **Phase 4** | User auth, cloud sync |
-| **Phase 5** | Video player, polish & optimization |
+| Phase | Features | Status |
+|-------|----------|--------|
+| **Phase 1** | Project setup, basic UI, audio playback | ✅ Done |
+| **Phase 2** | RSS feed parsing, subscriptions | ✅ Done |
+| **Phase 3** | Download management, offline mode | ✅ Done |
+| **Phase 4** | User auth, cloud sync | ❌ Pending (Supabase) |
+| **Phase 5** | Polish & optimization | ✅ Done |
 
 ## 7. App Pages
 
