@@ -5,7 +5,6 @@ import '../../../core/theme/neo_brutalist_theme.dart';
 import '../../../core/widgets/brutalist_card.dart';
 import '../../../core/widgets/brutalist_button.dart';
 import '../providers/settings_provider.dart';
-import '../../library/providers/library_provider.dart';
 import '../../equalizer/screens/equalizer_screen.dart';
 import '../../audio/widgets/sleep_timer_bottom_sheet.dart';
 import '../../library/widgets/folder_browser_view.dart';
@@ -17,16 +16,13 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final settingsState = ref.watch(settingsProvider);
     final settingsNotifier = ref.read(settingsProvider.notifier);
-    final libraryState = ref.watch(libraryProvider);
-    final libraryNotifier = ref.read(libraryProvider.notifier);
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final primaryColor = isDark ? NeoBrutalistColors.darkPrimary : NeoBrutalistColors.lightPrimary;
     final borderColor = isDark ? NeoBrutalistColors.darkBorder : NeoBrutalistColors.lightBorder;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('SETTINGS & CONFIG'),
+        title: const Text('SETTINGS'),
       ),
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -133,79 +129,18 @@ class SettingsScreen extends ConsumerWidget {
 
           const SizedBox(height: 24),
 
-          // Section: Storage & Library Scanner
-          _buildSectionHeader(context, 'LOCAL AUDIO DISCOVERY'),
-          const SizedBox(height: 8),
-          BrutalistCard(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text('Permission Status:', style: TextStyle(fontWeight: FontWeight.bold)),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: libraryState.hasPermission ? NeoBrutalistColors.success : NeoBrutalistColors.warning,
-                        borderRadius: BorderRadius.circular(3),
-                        border: Border.all(color: borderColor, width: 1.0),
-                      ),
-                      child: Text(
-                        libraryState.hasPermission ? 'GRANTED' : 'RESTRICTED',
-                        style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w900),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  'Loaded ${libraryState.tracks.length} track(s) in active index.',
-                  style: const TextStyle(fontSize: 12, color: Colors.grey),
-                ),
-                const SizedBox(height: 16),
-                BrutalistButton(
-                  width: double.infinity,
-                  backgroundColor: primaryColor,
-                  onPressed: () => libraryNotifier.scanAudioLibrary(),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      if (libraryState.isLoading)
-                        const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.black),
-                        )
-                      else
-                        const Icon(Icons.refresh, size: 18),
-                      const SizedBox(width: 8),
-                      const Text('RESCAN AUDIO LIBRARY'),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 24),
-
-          // Section: Specification Specs
-          _buildSectionHeader(context, 'APP INFO & SPECIFICATIONS'),
+          // Section: App Info
+          _buildSectionHeader(context, 'APP INFO'),
           const SizedBox(height: 8),
           const BrutalistCard(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Poddrunk Offline Music Player', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 15)),
+                Text('Poddrunk', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16)),
                 SizedBox(height: 4),
-                Text('Style: Neo-Brutalist / Editorial Paper', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                SizedBox(height: 2),
-                Text('Primary Engine: Counted Repeat ("Loop N Times")', style: TextStyle(fontSize: 12)),
-                Text('Audio Service: just_audio & audio_service', style: TextStyle(fontSize: 12)),
-                Text('Local Scanner: on_audio_query', style: TextStyle(fontSize: 12)),
-                SizedBox(height: 8),
-                Text('Version 1.0.0 (Ad-Free & Offline First)', style: TextStyle(fontSize: 11, color: Colors.grey)),
+                Text('Offline Music & Audio Player', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                SizedBox(height: 12),
+                Text('Version 1.0.0 • 100% Offline & Ad-Free', style: TextStyle(fontSize: 12, color: Colors.grey)),
               ],
             ),
           ),

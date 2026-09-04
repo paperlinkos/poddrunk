@@ -1,0 +1,45 @@
+Categories:
+  - Multimedia
+License: MIT
+AuthorName: Poddrunk Contributors
+SourceCode: https://github.com/thisscribe000/poddrunk
+IssueTracker: https://github.com/thisscribe000/poddrunk/issues
+Changelog: https://github.com/thisscribe000/poddrunk/releases
+
+AutoName: Poddrunk
+Summary: Neo-brutalist offline music player with counted loops & 5-band EQ
+Description: |-
+  Poddrunk is an offline-first, ad-free music and audio player built with a
+  bold Neo-Brutalist editorial aesthetic. Designed for musicians, students,
+  transcribers, dancers, and focused listeners who want fine-grained playback
+  control without trackers, analytics, or network bloat.
+
+  Features:
+  * Counted Repeat Engine (Loop N Times from 1 to 99)
+  * 5-Band Graphic Equalizer with Bass Boost and custom presets
+  * Local Audio Library & Storage Folder Hierarchy Browser
+  * Double-Tap Quick Seek on Cassette Artwork
+  * Smart Sleep Timer (Countdown & Song Finish auto-pause)
+  * Live Minimal Weather Indicator (Powered by Open-Meteo)
+  * Ringtone Setter with direct system intent integration
+  * 100% Ad-free & Private with zero telemetry
+
+RepoType: git
+Repo: https://github.com/thisscribe000/poddrunk.git
+
+Builds:
+  - versionName: 1.0.0
+    versionCode: 1
+    commit: v1.0.0
+    output: build/app/outputs/flutter-apk/app-release.apk
+    srclib:
+      - flutter@3.29.0
+    build:
+      - $$flutter$$/bin/flutter config --no-analytics
+      - $$flutter$$/bin/flutter pub get
+      - $$flutter$$/bin/flutter build apk
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags
+CurrentVersion: 1.0.0
+CurrentVersionCode: 1

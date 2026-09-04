@@ -1,0 +1,7 @@
+• Initial release of Poddrunk v1.0.0
+• Neo-Brutalist design language with Light, Dark, and System theme support
+• Counted Repeat ("Loop N Times") audio engine
+• 5-Band Graphic Equalizer with Bass Boost
+• Local Audio Library & Storage Folder Browser
+• Double-Tap Quick Seek & Smart Sleep Timer
+• 100% Offline with zero trackers or advertisements

@@ -1,0 +1,12 @@
+Poddrunk is an offline-first, ad-free music and audio player built with a bold Neo-Brutalist editorial aesthetic. Designed for musicians, students, transcribers, dancers, and focused listeners who want fine-grained playback control without trackers, analytics, or network bloat.
+
+Key Features:
+
+• Counted Repeat Engine: Repeat any song or section exactly N times (1 to 99) before automatically moving forward.
+• 5-Band Equalizer & Bass Boost: Sculpt audio frequencies with built-in presets (Bass Boost, Vocal Clarity, Rock, Electronic, Flat) or custom adjustments.
+• Full Local Library & Folder Browser: Play MP3, FLAC, AAC, WAV, and OGG files directly from device storage or navigate physical folder hierarchies.
+• Double-Tap Quick Seek: Skip forward or backward by configurable intervals (10s, 15s, 30s, 60s) by double-tapping artwork sides.
+• Smart Sleep Timer: Gentle auto-pause countdown or stop playback right when the current track finishes.
+• Live Weather Indicator: Minimal monochrome temperature and wind indicator powered by Open-Meteo.
+• Set as Ringtone: Set favorite audio tracks directly as the device ringtone with system permission handling.
+• 100% Private & Ad-Free: No accounts, zero trackers, and no advertisements. Free and open source under the MIT License.

@@ -12,6 +12,7 @@ import '../../playlists/providers/playlist_provider.dart';
 import '../../playlists/domain/models/playlist_model.dart';
 import '../../playlists/screens/playlist_detail_screen.dart';
 import '../widgets/track_options_bottom_sheet.dart';
+import '../widgets/weather_badge.dart';
 import 'collection_detail_screen.dart';
 
 class LibraryScreen extends ConsumerStatefulWidget {
@@ -190,7 +191,11 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> with SingleTicker
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('EDITORIAL AUDIO LIBRARY'),
+        title: const Text('LIBRARY'),
+        actions: const [
+          WeatherBadge(),
+          SizedBox(width: 8),
+        ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(48),
           child: Container(
