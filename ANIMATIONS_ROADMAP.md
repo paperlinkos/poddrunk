@@ -19,14 +19,14 @@ For every animation on this list:
 | # | Target Element | Screen / Component | Animation Type & Physics | Status |
 |---|---|---|---|---|
 | **A1** | **Mechanical Push-Down & Haptic Click** | All Buttons (`BrutalistButton`) | When pressed down, button translates `+2px, +2px` while shadow collapses with a crisp `HapticFeedback.lightImpact()`. Spring release `60ms`. | `[x] ACCEPTED` |
-| **A2** | **Card Press Depth Reaction** | Clickable Cards (`BrutalistCard`) | Subtle translation `+1.5px, +1.5px` on tap with shadow reduction on interactive cards (Settings tiles, Queue items). | `[ ] PENDING` |
+| **A2** | **Card Press Depth Reaction** | Clickable Cards (`BrutalistCard`) | Subtle translation `+1.5px, +1.5px` on tap with shadow reduction on interactive cards (Settings tiles, Queue items). | `[x] ACCEPTED` |
 
 ---
 
 ### Phase 2: Cassette Player & Playback Screen
 | # | Target Element | Screen / Component | Animation Type & Physics | Status |
 |---|---|---|---|---|
-| **A3** | **Cassette Reel Inertia & Friction** | Now Playing Cassette (`RetroCassetteWidget`) | Reels accelerate smoothly over `350ms` upon Play, and coast to a natural friction stop over `450ms` upon Pause instead of freezing abruptly. | `[ ] PENDING` |
+| **A3** | **Cassette Reel Inertia & Friction** | Now Playing Cassette (`RetroCassetteWidget`) | Reels accelerate smoothly over `350ms` upon Play, and coast to a natural friction stop over `450ms` upon Pause instead of freezing abruptly. | `[?] IN REVIEW` |
 | **A4** | **Seek Gesture Flash & Ripple** | Artwork Double-Tap (`NowPlayingScreen`) | When double-tapping left/right sides of cassette to skip `10s/15s`, an animated Neo-Brutalist chevron ripple (`<< 10s` / `>> 10s`) bursts and fades out smoothly. | `[ ] PENDING` |
 | **A5** | **Play/Pause Morphing Toggle** | Main Playback Button (`NowPlayingScreen`) | Smooth animated vector rotation/morph between Play (▶) and Pause (⏸) icons with subtle scale spring. | `[ ] PENDING` |
 

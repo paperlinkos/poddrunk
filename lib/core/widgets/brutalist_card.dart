@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../theme/neo_brutalist_theme.dart';
 
-class BrutalistCard extends StatelessWidget {
+class BrutalistCard extends StatefulWidget {
   final Widget child;
   final Color? backgroundColor;
   final Color? borderColor;
@@ -26,17 +27,59 @@ class BrutalistCard extends StatelessWidget {
   });
 
   @override
+  State<BrutalistCard> createState() => _BrutalistCardState();
+}
+
+class _BrutalistCardState extends State<BrutalistCard> {
+  bool _isPressed = false;
+
+  bool get _isInteractive => widget.onTap != null || widget.onLongPress != null;
+
+  void _onTapDown(TapDownDetails details) {
+    if (!_isInteractive) return;
+    HapticFeedback.selectionClick();
+    setState(() => _isPressed = true);
+  }
+
+  void _onTapUp(TapUpDetails details) {
+    if (_isPressed) {
+      setState(() => _isPressed = false);
+    }
+  }
+
+  void _onTapCancel() {
+    if (_isPressed) {
+      setState(() => _isPressed = false);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final defaultBg = isDark ? NeoBrutalistColors.darkCardBg : NeoBrutalistColors.lightCardBg;
     final defaultBorder = isDark ? NeoBrutalistColors.darkBorder : NeoBrutalistColors.lightBorder;
 
-    final bg = backgroundColor ?? defaultBg;
-    final border = borderColor ?? defaultBorder;
+    final bg = widget.backgroundColor ?? defaultBg;
+    final border = widget.borderColor ?? defaultBorder;
     final shadowColor = isDark ? Colors.black : border;
 
-    return Container(
-      margin: margin,
+    final isPressedState = _isInteractive && _isPressed;
+    final currentOffset = isPressedState
+        ? Offset(
+            (widget.shadowOffset.dx - 1.5).clamp(1.0, 10.0),
+            (widget.shadowOffset.dy - 1.5).clamp(1.0, 10.0),
+          )
+        : widget.shadowOffset;
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 60),
+      curve: Curves.easeOut,
+      transform: Matrix4.translationValues(
+        isPressedState ? 1.5 : 0.0,
+        isPressedState ? 1.5 : 0.0,
+        0.0,
+      ),
+      margin: widget.margin,
       decoration: BoxDecoration(
         color: bg,
         borderRadius: BorderRadius.circular(NeoBrutalistTheme.borderRadius),
@@ -44,11 +87,11 @@ class BrutalistCard extends StatelessWidget {
           color: border,
           width: NeoBrutalistTheme.borderWidth,
         ),
-        boxShadow: hasShadow
+        boxShadow: widget.hasShadow
             ? [
                 BoxShadow(
                   color: shadowColor,
-                  offset: shadowOffset,
+                  offset: currentOffset,
                   blurRadius: 0,
                 ),
               ]
@@ -57,12 +100,15 @@ class BrutalistCard extends StatelessWidget {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: onTap,
-          onLongPress: onLongPress,
+          onTapDown: _onTapDown,
+          onTapUp: _onTapUp,
+          onTapCancel: _onTapCancel,
+          onTap: widget.onTap,
+          onLongPress: widget.onLongPress,
           borderRadius: BorderRadius.circular(NeoBrutalistTheme.borderRadius),
           child: Padding(
-            padding: padding,
-            child: child,
+            padding: widget.padding,
+            child: widget.child,
           ),
         ),
       ),
