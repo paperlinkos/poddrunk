@@ -46,3 +46,9 @@ app.*.map.json
 /android/build/
 .vscode/
 
+
+# Social media and marketing playbooks (private)
+Poddrunk_Social_Media_Launch_Guide.*
+showcase/poster_*
+*.mp4
+*.gif
