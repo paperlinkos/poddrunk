@@ -26,7 +26,7 @@ For every animation on this list:
 ### Phase 2: Cassette Player & Playback Screen
 | # | Target Element | Screen / Component | Animation Type & Physics | Status |
 |---|---|---|---|---|
-| **A3** | **Cassette Reel Inertia & Friction** | Now Playing Cassette (`RetroCassetteWidget`) | Reels accelerate smoothly over `350ms` upon Play, and coast to a natural friction stop over `450ms` upon Pause instead of freezing abruptly. | `[?] IN REVIEW` |
+| **A3** | **Cassette Reel Inertia & Friction** | Now Playing Cassette (`RetroCassetteWidget`) | Reels accelerate smoothly over `350ms` upon Play, and coast to a natural friction stop over `450ms` upon Pause instead of freezing abruptly. | `[-] REVERTED (Laggy/Jittery)` |
 | **A4** | **Seek Gesture Flash & Ripple** | Artwork Double-Tap (`NowPlayingScreen`) | When double-tapping left/right sides of cassette to skip `10s/15s`, an animated Neo-Brutalist chevron ripple (`<< 10s` / `>> 10s`) bursts and fades out smoothly. | `[ ] PENDING` |
 | **A5** | **Play/Pause Morphing Toggle** | Main Playback Button (`NowPlayingScreen`) | Smooth animated vector rotation/morph between Play (▶) and Pause (⏸) icons with subtle scale spring. | `[ ] PENDING` |
 
