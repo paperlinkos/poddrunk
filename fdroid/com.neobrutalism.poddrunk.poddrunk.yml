@@ -2,9 +2,9 @@ Categories:
   - Multimedia
 License: MIT
 AuthorName: Poddrunk Contributors
-SourceCode: https://github.com/thisscribe000/poddrunk
-IssueTracker: https://github.com/thisscribe000/poddrunk/issues
-Changelog: https://github.com/thisscribe000/poddrunk/releases
+SourceCode: https://github.com/paperlinkos/poddrunk
+IssueTracker: https://github.com/paperlinkos/poddrunk/issues
+Changelog: https://github.com/paperlinkos/poddrunk/releases
 
 AutoName: Poddrunk
 Summary: Neo-brutalist offline music player with counted loops & 5-band EQ
@@ -25,7 +25,7 @@ Description: |-
   * 100% Ad-free & Private with zero telemetry
 
 RepoType: git
-Repo: https://github.com/thisscribe000/poddrunk.git
+Repo: https://github.com/paperlinkos/poddrunk.git
 
 Builds:
   - versionName: 1.0.0

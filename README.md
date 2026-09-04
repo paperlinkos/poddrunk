@@ -11,7 +11,7 @@
 **A high-energy, Neo-Brutalist offline music player for Android.**  
 *Raw typography, stark contrast shadows, tactile haptics, and zero tracking.*
 
-[Download Latest APK](https://github.com/thisscribe000/poddrunk/releases/latest) • [Features](#-features) • [Screenshots](#-screenshots) • [Installation](#-installation) • [Contributing](#-contributing)
+[Download Latest APK](https://github.com/paperlinkos/poddrunk/releases/latest) • [Features](#-features) • [Screenshots](#-screenshots) • [Installation](#-installation) • [Contributing](#-contributing)
 
 </div>
 
@@ -49,7 +49,7 @@
 ## 🚀 Download & Installation
 
 ### Option 1: Direct APK Download (Free)
-1. Go to the **[Releases](https://github.com/thisscribe000/poddrunk/releases)** page.
+1. Go to the **[Releases](https://github.com/paperlinkos/poddrunk/releases)** page.
 2. Download the latest `app-release.apk`.
 3. Open the file on your Android device and tap **Install** (allow *Install Unknown Apps* if prompted).
 
@@ -63,7 +63,7 @@
 #### Setup
 ```bash
 # 1. Clone the repository
-git clone https://github.com/thisscribe000/poddrunk.git
+git clone https://github.com/paperlinkos/poddrunk.git
 cd poddrunk
 
 # 2. Install Flutter packages
