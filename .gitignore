@@ -52,3 +52,5 @@ Poddrunk_Social_Media_Launch_Guide.*
 showcase/poster_*
 *.mp4
 *.gif
+showcase_media/
+generate_showcase_video.py
