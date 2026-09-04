@@ -1,0 +1,58 @@
+name: poddrunk
+description: "A full-featured podcast player app"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.11.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+
+  # State Management
+  flutter_riverpod: ^2.6.1
+
+  # Audio & Video
+  just_audio: ^0.9.43
+  video_player: ^2.9.3
+  audio_service: ^0.18.17
+
+  # Navigation
+  go_router: ^14.8.1
+
+  # Networking
+  dio: ^5.8.0
+
+  # RSS Parsing
+  xml: ^6.5.0
+
+  # Local Storage
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  path_provider: ^2.1.5
+
+  # Image Caching
+  cached_network_image: ^3.4.1
+
+  # Utils
+  intl: ^0.20.2
+  uuid: ^4.5.1
+  url_launcher: ^6.3.1
+  share_plus: ^10.1.4
+
+  # UI Components
+  shimmer: ^3.0.0
+
+  # Notifications
+  flutter_local_notifications: ^18.0.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
