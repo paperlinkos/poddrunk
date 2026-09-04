@@ -90,7 +90,7 @@ The compiled APK will be located at:
 
 ---
 
-## 🤝 Contributing
+## 🤝 Contributing & Custom Builds
 
 Contributions are warmly welcomed!
 1. **Fork** the repository.
@@ -101,6 +101,23 @@ Contributions are warmly welcomed!
 
 ---
 
+## 💼 Work Inquiries & Custom Builds
+
+Need a custom mobile app built, bespoke features added to Poddrunk, or exploring a design collaboration?
+- **Email:** [paperlinkos@gmail.com](mailto:paperlinkos@gmail.com)
+- **GitHub:** [@paperlinkos](https://github.com/paperlinkos)
+
+---
+
+## ☕ Support & Donations
+
+If you love Poddrunk and want to support ongoing independent, ad-free, open-source development:
+- **Ko-fi:** [ko-fi.com/paperlinkos](https://ko-fi.com/paperlinkos) *(0% platform fee for creators)*
+- **Buy Me a Coffee:** [buymeacoffee.com/paperlinkos](https://buymeacoffee.com/paperlinkos)
+- **Direct Inquiry:** [paperlinkos@gmail.com](mailto:paperlinkos@gmail.com)
+
+---
+
 ## 📄 License
 
 Distributed under the **MIT License**. See [`LICENSE`](LICENSE) for more information.
@@ -108,5 +125,5 @@ Distributed under the **MIT License**. See [`LICENSE`](LICENSE) for more informa
 ---
 
 <div align="center">
-  <b>Built with ❤️ and rebellious energy for audio enthusiasts.</b>
+  <b>Built with ❤️ and rebellious energy by Paperlink OS.</b>
 </div>
