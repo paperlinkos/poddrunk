@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../theme/neo_brutalist_theme.dart';
 
 class BrutalistButton extends StatefulWidget {
@@ -55,13 +56,24 @@ class _BrutalistButtonState extends State<BrutalistButton> {
         : (widget.active ? const Offset(1, 1) : NeoBrutalistTheme.shadowOffset);
 
     return GestureDetector(
-      onTapDown: (_) => setState(() => _isPressed = true),
+      onTapDown: widget.onPressed == null
+          ? null
+          : (_) {
+              HapticFeedback.lightImpact();
+              setState(() => _isPressed = true);
+            },
       onTapUp: (_) => setState(() => _isPressed = false),
       onTapCancel: () => setState(() => _isPressed = false),
       onTap: widget.onPressed,
       onLongPress: widget.onLongPress,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 60),
+        curve: Curves.easeOutCubic,
+        transform: Matrix4.translationValues(
+          _isPressed ? 2.0 : 0.0,
+          _isPressed ? 2.0 : 0.0,
+          0.0,
+        ),
         width: widget.width,
         height: widget.height,
         padding: widget.padding,

@@ -60,73 +60,76 @@ class LibraryNotifier extends StateNotifier<LibraryState> {
     try {
       bool isGranted = false;
 
-      // 1. Silent check first (avoids dialogs/delays if already granted)
-      final audioStatus = await Permission.audio.status;
-      if (audioStatus.isGranted) {
-        isGranted = true;
-      } else {
+      if (!kIsWeb && Platform.isAndroid) {
+        // Android 13+ (API 33+) requires Permission.audio (READ_MEDIA_AUDIO).
+        // Android 12 and below requires Permission.storage (READ_EXTERNAL_STORAGE).
+        final audioStatus = await Permission.audio.status;
         final storageStatus = await Permission.storage.status;
-        if (storageStatus.isGranted) {
-          isGranted = true;
-        } else {
-          final mediaStatus = await Permission.mediaLibrary.status;
-          if (mediaStatus.isGranted) {
-            isGranted = true;
-          }
-        }
-      }
 
-      // 2. If not yet granted, request permissions sequentially
-      if (!isGranted) {
-        final reqAudio = await Permission.audio.request();
-        if (reqAudio.isGranted) {
+        if (audioStatus.isGranted || storageStatus.isGranted) {
           isGranted = true;
         } else {
-          final reqStorage = await Permission.storage.request();
-          if (reqStorage.isGranted) {
+          // Request audio permission first (Android 13+)
+          final reqAudio = await Permission.audio.request();
+          if (reqAudio.isGranted) {
             isGranted = true;
           } else {
-            final reqMedia = await Permission.mediaLibrary.request();
-            if (reqMedia.isGranted) {
+            // Request storage permission as fallback (Android 12-)
+            final reqStorage = await Permission.storage.request();
+            if (reqStorage.isGranted) {
               isGranted = true;
             }
           }
         }
-      }
-
-      // Fallback: check on_audio_query's status if needed
-      if (!isGranted) {
-        try {
-          isGranted = await _audioQuery.permissionsStatus();
-        } catch (_) {}
+      } else {
+        // Non-Android platforms
+        final mediaStatus = await Permission.mediaLibrary.status;
+        final storageStatus = await Permission.storage.status;
+        if (mediaStatus.isGranted || storageStatus.isGranted) {
+          isGranted = true;
+        } else {
+          final reqMedia = await Permission.mediaLibrary.request();
+          isGranted = reqMedia.isGranted;
+        }
       }
 
       if (isGranted) {
-        final songs = await _audioQuery.querySongs(
-          sortType: SongSortType.DATE_ADDED,
-          orderType: OrderType.DESC_OR_GREATER,
-          uriType: UriType.EXTERNAL,
-          ignoreCase: true,
-        );
-
-        final localTracks = songs.map((s) {
-          return TrackModel(
-            id: s.id.toString(),
-            title: s.title.isNotEmpty ? s.title : 'Unknown Track',
-            artist: s.artist != null && s.artist != '<unknown>' ? s.artist! : 'Unknown Artist',
-            album: s.album != null && s.album != '<unknown>' ? s.album! : 'Unknown Album',
-            duration: Duration(milliseconds: s.duration ?? 0),
-            uri: s.data,
-            isLocal: true,
+        try {
+          final songs = await _audioQuery.querySongs(
+            sortType: SongSortType.DATE_ADDED,
+            orderType: OrderType.DESC_OR_GREATER,
+            uriType: UriType.EXTERNAL,
+            ignoreCase: true,
           );
-        }).toList();
 
-        state = state.copyWith(
-          tracks: localTracks,
-          isLoading: false,
-          hasPermission: true,
-        );
-        return;
+          final localTracks = songs.map((s) {
+            return TrackModel(
+              id: s.id.toString(),
+              title: s.title.isNotEmpty ? s.title : 'Unknown Track',
+              artist: s.artist != null && s.artist != '<unknown>' ? s.artist! : 'Unknown Artist',
+              album: s.album != null && s.album != '<unknown>' ? s.album! : 'Unknown Album',
+              duration: Duration(milliseconds: s.duration ?? 0),
+              uri: s.data,
+              isLocal: true,
+            );
+          }).toList();
+
+          state = state.copyWith(
+            tracks: localTracks,
+            isLoading: false,
+            hasPermission: true,
+          );
+          return;
+        } catch (e) {
+          debugPrint('OnAudioQuery query error: $e');
+          state = state.copyWith(
+            tracks: const [],
+            isLoading: false,
+            hasPermission: false,
+            errorMessage: 'Unable to read audio files: $e',
+          );
+          return;
+        }
       }
 
       // Permission not granted
