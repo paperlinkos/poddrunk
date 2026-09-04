@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PODDRUNK • App Showcase & Social Mockups</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #F7CE46;
+      --accent: #EE5A24;
+      --border: #111111;
+      --canvas: #F9F4EB;
+      --card-bg: #FFFFFF;
+      --text: #111111;
+      --muted: #666666;
+      --phone-border: #1A1A1A;
+      --phone-shadow: rgba(0, 0, 0, 0.15);
+      --bg-pattern: #F0E8DA;
+    }
+
+    body.dark-theme {
+      --primary: #F7CE46;
+      --accent: #FF5722;
+      --border: #2E2E36;
+      --canvas: #0C0C0E;
+      --card-bg: #18181C;
+      --text: #F4F4F6;
+      --muted: #8E8E98;
+      --phone-border: #222226;
+      --phone-shadow: rgba(0, 0, 0, 0.6);
+      --bg-pattern: #141418;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background-color: var(--bg-pattern);
+      background-image: radial-gradient(var(--border) 1px, transparent 1px);
+      background-size: 24px 24px;
+      color: var(--text);
+      min-height: 100vh;
+      padding-bottom: 80px;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    /* Top Sticky Showcase Bar */
+    .top-bar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: var(--card-bg);
+      border-bottom: 3px solid var(--border);
+      box-shadow: 0 4px 0 var(--border);
+      padding: 16px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .brand-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-badge {
+      background: var(--primary);
+      border: 2px solid var(--border);
+      box-shadow: 2px 2px 0 var(--border);
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 900;
+      border-radius: 4px;
+      color: #111;
+    }
+
+    .controls-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .btn {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 900;
+      font-size: 12px;
+      padding: 10px 18px;
+      background: var(--card-bg);
+      color: var(--text);
+      border: 2px solid var(--border);
+      box-shadow: 3px 3px 0 var(--border);
+      cursor: pointer;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: transform 0.1s, box-shadow 0.1s;
+    }
+
+    .btn:hover {
+      transform: translate(-1px, -1px);
+      box-shadow: 4px 4px 0 var(--border);
+    }
+
+    .btn:active {
+      transform: translate(2px, 2px);
+      box-shadow: 1px 1px 0 var(--border);
+    }
+
+    .btn.active {
+      background: var(--primary);
+      color: #111;
+    }
+
+    /* Showcase Container */
+    .showcase-header {
+      max-width: 1200px;
+      margin: 40px auto 20px auto;
+      padding: 0 20px;
+      text-align: center;
+    }
+
+    .showcase-header h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 38px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .showcase-header p {
+      font-weight: 600;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    /* Stitched Canvas Layout */
+    .canvas-container {
+      display: flex;
+      gap: 36px;
+      padding: 30px;
+      overflow-x: auto;
+      justify-content: flex-start;
+      scroll-behavior: smooth;
+    }
+
+    .canvas-container.grid-view {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .canvas-container.vertical-stitch {
+      flex-direction: column;
+      align-items: center;
+      gap: 48px;
+    }
+
+    /* Smartphone Mockup Frame */
+    .phone-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      flex-shrink: 0;
+    }
+
+    .screen-tag {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 900;
+      font-size: 13px;
+      letter-spacing: 1px;
+      background: var(--card-bg);
+      border: 2px solid var(--border);
+      box-shadow: 3px 3px 0 var(--border);
+      padding: 6px 14px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+
+    .phone-frame {
+      width: 375px;
+      height: 780px;
+      background: var(--canvas);
+      border: 4px solid var(--phone-border);
+      border-radius: 44px;
+      box-shadow: 10px 10px 0 var(--border), 0 24px 48px var(--phone-shadow);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+    }
+
+    /* Dynamic Island */
+    .phone-island {
+      width: 108px;
+      height: 26px;
+      background: #000;
+      border-radius: 20px;
+      margin: 10px auto 4px auto;
+      z-index: 100;
+      flex-shrink: 0;
+    }
+
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      padding: 0 24px;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--text);
+      align-items: center;
+      margin-top: -20px;
+      margin-bottom: 12px;
+      z-index: 90;
+    }
+
+    .screen-content {
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      padding: 12px 16px;
+      position: relative;
+    }
+
+    /* Neo-Brutalist Components */
+    .brutalist-card {
+      background: var(--card-bg);
+      border: 2px solid var(--border);
+      border-radius: 6px;
+      box-shadow: 3px 3px 0 var(--border);
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+
+    .app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--border);
+      margin-bottom: 12px;
+    }
+
+    .app-header h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: 1px;
+    }
+
+    /* Tabs */
+    .tabs-row {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 14px;
+      overflow-x: auto;
+    }
+
+    .tab-chip {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 11px;
+      font-weight: 900;
+      padding: 6px 12px;
+      border: 2px solid var(--border);
+      border-radius: 4px;
+      background: var(--card-bg);
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    .tab-chip.active {
+      background: var(--primary);
+      box-shadow: 2px 2px 0 var(--border);
+      color: #111;
+    }
+
+    /* Song Item */
+    .song-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .song-badge {
+      width: 36px;
+      height: 36px;
+      background: var(--primary);
+      border: 1.5px solid var(--border);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 12px;
+      color: #111;
+      flex-shrink: 0;
+    }
+
+    .song-badge.playing {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .song-meta {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .song-title {
+      font-size: 13px;
+      font-weight: 900;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .song-sub {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 2px;
+    }
+
+    .song-dur {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Bottom Mini Player */
+    .mini-player {
+      position: absolute;
+      bottom: 12px;
+      left: 12px;
+      right: 12px;
+      background: #FFFFFF;
+      border: 2.5px solid #111;
+      box-shadow: 4px 4px 0 #111;
+      border-radius: 8px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 50;
+    }
+
+    .mini-icon {
+      width: 34px;
+      height: 34px;
+      background: #EE5A24;
+      border: 1.5px solid #111;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 900;
+      font-size: 14px;
+    }
+
+    /* Retro Cassette Widget */
+    .cassette-box {
+      width: 100%;
+      height: 190px;
+      background: #18181A;
+      border: 3.5px solid #111;
+      box-shadow: 6px 6px 0 #111;
+      border-radius: 12px;
+      position: relative;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      color: #fff;
+      margin: 10px 0 20px 0;
+    }
+
+    .cassette-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #333;
+      padding-bottom: 6px;
+    }
+
+    .cassette-label {
+      background: var(--primary);
+      color: #111;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 900;
+      font-size: 11px;
+      padding: 2px 8px;
+      border: 1.5px solid #111;
+      border-radius: 3px;
+    }
+
+    .spool-window {
+      background: #2C2C32;
+      border: 2.5px solid #111;
+      border-radius: 8px;
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      padding: 0 30px;
+      position: relative;
+    }
+
+    .spool-window::before {
+      content: '';
+      position: absolute;
+      width: 50px;
+      height: 18px;
+      background: #EE5A24;
+      border: 1.5px solid #111;
+      border-radius: 3px;
+      z-index: 1;
+    }
+
+    .spool {
+      width: 44px;
+      height: 44px;
+      background: #FFFFFF;
+      border: 3px solid #111;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 2;
+      animation: spin 3s linear infinite;
+    }
+
+    .spool::after {
+      content: '';
+      width: 14px;
+      height: 14px;
+      background: #18181A;
+      border: 2px solid #111;
+      border-radius: 50%;
+    }
+
+    .spool-teeth {
+      position: absolute;
+      width: 100%;
+      height: 4px;
+      background: #111;
+    }
+
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Scrubber Slider */
+    .scrubber-bar {
+      width: 100%;
+      height: 8px;
+      background: rgba(0,0,0,0.15);
+      border: 1.5px solid var(--border);
+      border-radius: 4px;
+      position: relative;
+      margin: 12px 0 6px 0;
+    }
+
+    .scrubber-fill {
+      width: 42%;
+      height: 100%;
+      background: var(--accent);
+      border-radius: 2px;
+      position: relative;
+    }
+
+    .scrubber-thumb {
+      width: 16px;
+      height: 16px;
+      background: var(--primary);
+      border: 2px solid var(--border);
+      box-shadow: 1px 1px 0 var(--border);
+      border-radius: 50%;
+      position: absolute;
+      right: -8px;
+      top: -5px;
+    }
+
+    /* Repeat Engine Box */
+    .engine-badge {
+      background: var(--card-bg);
+      border: 2px solid var(--border);
+      box-shadow: 3px 3px 0 var(--border);
+      border-radius: 6px;
+      padding: 10px;
+      margin: 16px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .engine-counter {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 900;
+      font-size: 16px;
+      color: var(--accent);
+    }
+
+    /* Transport Controls */
+    .controls-grid {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 14px;
+    }
+
+    .ctrl-btn {
+      width: 46px;
+      height: 46px;
+      background: var(--card-bg);
+      border: 2px solid var(--border);
+      box-shadow: 3px 3px 0 var(--border);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .ctrl-btn.play {
+      width: 58px;
+      height: 58px;
+      background: var(--primary);
+      font-size: 24px;
+    }
+
+    /* Equalizer Sliders */
+    .eq-grid {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      height: 220px;
+      background: var(--card-bg);
+      border: 2.5px solid var(--border);
+      box-shadow: 4px 4px 0 var(--border);
+      border-radius: 8px;
+      padding: 16px 12px;
+      margin: 14px 0;
+    }
+
+    .eq-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      height: 100%;
+    }
+
+    .slider-track {
+      width: 10px;
+      flex: 1;
+      background: rgba(0,0,0,0.1);
+      border: 1.5px solid var(--border);
+      border-radius: 5px;
+      position: relative;
+      display: flex;
+      justify-content: center;
+    }
+
+    .slider-handle {
+      position: absolute;
+      width: 24px;
+      height: 14px;
+      background: var(--primary);
+      border: 2px solid var(--border);
+      box-shadow: 2px 2px 0 var(--border);
+      border-radius: 3px;
+    }
+
+    .eq-label {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+    }
+
+    /* Preset Chips */
+    .presets-row {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+    }
+
+    .preset-chip {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 10px;
+      font-weight: 900;
+      padding: 6px 10px;
+      border: 1.5px solid var(--border);
+      border-radius: 4px;
+      background: var(--card-bg);
+      white-space: nowrap;
+    }
+
+    .preset-chip.active {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    /* Splash Screen Mockup */
+    .splash-view {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #F9F4EB;
+    }
+
+    .splash-logo-card {
+      width: 140px;
+      height: 140px;
+      background: #F7CE46;
+      border: 3.5px solid #111;
+      box-shadow: 6px 6px 0 #111;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .splash-logo-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sticky Showcase Bar -->
+  <header class="top-bar">
+    <div class="brand-title">
+      <span>PODDRUNK</span>
+      <span class="brand-badge">PINTEREST SHOWCASE</span>
+    </div>
+    <div class="controls-row">
+      <button class="btn" id="themeToggle" onclick="toggleTheme()">🌓 TOGGLE DARK MODE</button>
+      <button class="btn active" onclick="setLayout('stitch')">↔️ HORIZONTAL STITCH</button>
+      <button class="btn" onclick="setLayout('vertical')">↕️ VERTICAL (PINTEREST PIN)</button>
+      <button class="btn" onclick="setLayout('grid')">🔲 GRID VIEW</button>
+    </div>
+  </header>
+
+  <!-- Showcase Header -->
+  <section class="showcase-header">
+    <h1>PodDrunk • Editorial Audio & Repeat Engine</h1>
+    <p>Neo-Brutalist Offline Music Player • High-Resolution Social Showcase Stitched Collection</p>
+  </section>
+
+  <!-- Stitched Canvas Container -->
+  <main class="canvas-container" id="canvas">
+
+    <!-- 1. SPLASH SCREEN -->
+    <div class="phone-wrapper">
+      <span class="screen-tag">01 • Splash Entrance</span>
+      <div class="phone-frame">
+        <div class="phone-island"></div>
+        <div class="status-bar"><span>9:41</span><span>●●● 5G</span></div>
+        <div class="screen-content" style="padding: 0;">
+          <div class="splash-view">
+            <div class="splash-logo-card">
+              <img src="../assets/app_icon.jpg" alt="PodDrunk Logo">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. SONGS LIBRARY -->
+    <div class="phone-wrapper">
+      <span class="screen-tag">02 • Music Library</span>
+      <div class="phone-frame">
+        <div class="phone-island"></div>
+        <div class="status-bar"><span>9:41</span><span>●●● 5G</span></div>
+        <div class="screen-content">
+          <div class="app-header">
+            <h2>PODDRUNK</h2>
+            <div style="font-size: 18px;">🔍 ⚙️</div>
+          </div>
+          <div class="tabs-row">
+            <span class="tab-chip active">SONGS (48)</span>
+            <span class="tab-chip">PLAYLISTS</span>
+            <span class="tab-chip">ALBUMS</span>
+            <span class="tab-chip">ARTISTS</span>
+          </div>
+
+          <!-- Song Items -->
+          <div class="brutalist-card song-row" style="background: var(--primary);">
+            <div class="song-badge playing">▶</div>
+            <div class="song-meta">
+              <div class="song-title">Midnight Tokyo Drift</div>
+              <div class="song-sub">Kavinsky • OutRun</div>
+            </div>
+            <span class="song-dur">04:18</span>
+          </div>
+
+          <div class="brutalist-card song-row">
+            <div class="song-badge">02</div>
+            <div class="song-meta">
+              <div class="song-title">Canary Yellow Horizon</div>
+              <div class="song-sub">Analog Echo • Brutal Sound</div>
+            </div>
+            <span class="song-dur">03:45</span>
+          </div>
+
+          <div class="brutalist-card song-row">
+            <div class="song-badge">03</div>
+            <div class="song-meta">
+              <div class="song-title">Cassette Tape Memories</div>
+              <div class="song-sub">Retro Synthwave Lab</div>
+            </div>
+            <span class="song-dur">05:12</span>
+          </div>
+
+          <div class="brutalist-card song-row">
+            <div class="song-badge">04</div>
+            <div class="song-meta">
+              <div class="song-title">Cybernetic Bassline</div>
+              <div class="song-sub">Obsidian Orchestra</div>
+            </div>
+            <span class="song-dur">03:30</span>
+          </div>
+
+          <div class="brutalist-card song-row">
+            <div class="song-badge">05</div>
+            <div class="song-meta">
+              <div class="song-title">Editorial Repeat Pulse</div>
+              <div class="song-sub">Paper & Ink Collective</div>
+            </div>
+            <span class="song-dur">06:04</span>
+          </div>
+
+          <!-- Bottom Mini Player -->
+          <div class="mini-player">
+            <div class="mini-icon">📼</div>
+            <div class="song-meta">
+              <div class="song-title" style="color: #111;">Midnight Tokyo Drift</div>
+              <div class="song-sub" style="color: #555;">Kavinsky • OutRun</div>
+            </div>
+            <div style="font-size: 20px; font-weight: 900; color: #EE5A24; cursor: pointer;">⏸</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. NOW PLAYING PLAYER -->
+    <div class="phone-wrapper">
+      <span class="screen-tag">03 • Cassette Player & Repeat Engine</span>
+      <div class="phone-frame">
+        <div class="phone-island"></div>
+        <div class="status-bar"><span>9:41</span><span>●●● 5G</span></div>
+        <div class="screen-content">
+          <div class="app-header">
+            <div style="font-size: 18px;">⌄</div>
+            <h2>NOW PLAYING</h2>
+            <div style="font-size: 18px;">EQ •••</div>
+          </div>
+
+          <!-- Animated Retro Cassette -->
+          <div class="cassette-box">
+            <div class="cassette-header">
+              <span class="cassette-label">PODDRUNK • SIDE A</span>
+              <span style="font-size: 10px; font-weight: 800; opacity: 0.7;">CHROME 90</span>
+            </div>
+            <div class="spool-window">
+              <div class="spool"><div class="spool-teeth"></div></div>
+              <div class="spool"><div class="spool-teeth"></div></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 9px; font-weight: 900; opacity: 0.6;">
+              <span>INDEX: 024</span>
+              <span>STEREO TAPE</span>
+            </div>
+          </div>
+
+          <!-- Song Info -->
+          <div style="text-align: center; margin: 4px 0 10px 0;">
+            <div style="font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 900;">Midnight Tokyo Drift</div>
+            <div style="font-size: 12px; font-weight: 700; color: var(--muted); margin-top: 2px;">Kavinsky • OutRun (2024)</div>
+          </div>
+
+          <!-- Scrubber Slider -->
+          <div class="scrubber-bar">
+            <div class="scrubber-fill"><div class="scrubber-thumb"></div></div>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 11px; font-weight: 800; color: var(--muted);">
+            <span>01:48</span>
+            <span>04:18</span>
+          </div>
+
+          <!-- Counted Repeat Engine Box -->
+          <div class="engine-badge">
+            <div>
+              <div style="font-size: 10px; font-weight: 900; letter-spacing: 1px;">COUNTED REPEAT ENGINE</div>
+              <div style="font-size: 11px; font-weight: 700; color: var(--muted);">Finite Loop Protection</div>
+            </div>
+            <div class="engine-counter">🔁 3 / 5</div>
+          </div>
+
+          <!-- Transport Controls -->
+          <div class="controls-grid">
+            <div class="ctrl-btn">🔀</div>
+            <div class="ctrl-btn">⏮</div>
+            <div class="ctrl-btn play">▶</div>
+            <div class="ctrl-btn">⏭</div>
+            <div class="ctrl-btn">🔁</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. 5-BAND EQUALIZER SCREEN -->
+    <div class="phone-wrapper">
+      <span class="screen-tag">04 • 5-Band Studio Equalizer</span>
+      <div class="phone-frame">
+        <div class="phone-island"></div>
+        <div class="status-bar"><span>9:41</span><span>●●● 5G</span></div>
+        <div class="screen-content">
+          <div class="app-header">
+            <div style="font-size: 18px;">←</div>
+            <h2>5-BAND EQUALIZER</h2>
+            <div style="font-size: 11px; font-weight: 900; background: var(--accent); color: #fff; padding: 2px 6px; border-radius: 3px;">ON</div>
+          </div>
+
+          <!-- Presets -->
+          <div class="presets-row">
+            <span class="preset-chip active">BASS BOOST</span>
+            <span class="preset-chip">ELECTRONIC</span>
+            <span class="preset-chip">ACOUSTIC</span>
+            <span class="preset-chip">VOCAL</span>
+            <span class="preset-chip">FLAT</span>
+          </div>
+
+          <!-- Equalizer Sliders -->
+          <div class="eq-grid">
+            <div class="eq-col">
+              <span style="font-size: 9px; font-weight: 900;">+6dB</span>
+              <div class="slider-track"><div class="slider-handle" style="top: 25%;"></div></div>
+              <span class="eq-label">60Hz</span>
+            </div>
+            <div class="eq-col">
+              <span style="font-size: 9px; font-weight: 900;">+4dB</span>
+              <div class="slider-track"><div class="slider-handle" style="top: 35%;"></div></div>
+              <span class="eq-label">230Hz</span>
+            </div>
+            <div class="eq-col">
+              <span style="font-size: 9px; font-weight: 900;">0dB</span>
+              <div class="slider-track"><div class="slider-handle" style="top: 50%;"></div></div>
+              <span class="eq-label">910Hz</span>
+            </div>
+            <div class="eq-col">
+              <span style="font-size: 9px; font-weight: 900;">+3dB</span>
+              <div class="slider-track"><div class="slider-handle" style="top: 40%;"></div></div>
+              <span class="eq-label">3.6kHz</span>
+            </div>
+            <div class="eq-col">
+              <span style="font-size: 9px; font-weight: 900;">+5dB</span>
+              <div class="slider-track"><div class="slider-handle" style="top: 30%;"></div></div>
+              <span class="eq-label">14kHz</span>
+            </div>
+          </div>
+
+          <!-- Audio Engine Enhancements -->
+          <div class="brutalist-card" style="margin-top: 8px;">
+            <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 900; font-size: 12px; margin-bottom: 8px;">BASS BOOST INTENSITY</div>
+            <div class="scrubber-bar" style="margin: 0 0 6px 0;">
+              <div class="scrubber-fill" style="width: 75%;"><div class="scrubber-thumb"></div></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 10px; font-weight: 800; color: var(--muted);">
+              <span>OFF</span>
+              <span style="color: var(--accent); font-weight: 900;">750 / 1000</span>
+              <span>MAX</span>
+            </div>
+          </div>
+
+          <div class="brutalist-card">
+            <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 900; font-size: 12px; margin-bottom: 6px;">VIRTUALIZER & REVERB</div>
+            <div style="display: flex; gap: 6px;">
+              <span class="preset-chip active" style="font-size: 9px;">LARGE HALL</span>
+              <span class="preset-chip" style="font-size: 9px;">STUDIO ROOM</span>
+              <span class="preset-chip" style="font-size: 9px;">PLATE</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. ALBUM & ARTIST COLLECTION VIEW -->
+    <div class="phone-wrapper">
+      <span class="screen-tag">05 • Album & Artist Discography</span>
+      <div class="phone-frame">
+        <div class="phone-island"></div>
+        <div class="status-bar"><span>9:41</span><span>●●● 5G</span></div>
+        <div class="screen-content">
+          <div class="app-header">
+            <div style="font-size: 18px;">←</div>
+            <h2>ALBUM</h2>
+            <div style="font-size: 18px;">•••</div>
+          </div>
+
+          <!-- Collection Banner -->
+          <div class="brutalist-card" style="display: flex; gap: 14px; align-items: center; margin-bottom: 14px;">
+            <div style="width: 68px; height: 68px; background: var(--primary); border: 2px solid var(--border); box-shadow: 2px 2px 0 var(--border); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 32px;">
+              💿
+            </div>
+            <div>
+              <div style="font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 900;">OutRun Extended</div>
+              <div style="font-size: 12px; font-weight: 700; color: var(--muted); margin: 2px 0;">Kavinsky</div>
+              <div style="font-size: 10px; font-weight: 800; color: var(--accent);">12 TRACKS • 54 MIN</div>
+            </div>
+          </div>
+
+          <!-- Collection Buttons -->
+          <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+            <button class="btn active" style="flex: 1; padding: 8px 12px; font-size: 11px;">▶ PLAY ALL</button>
+            <button class="btn" style="flex: 1; padding: 8px 12px; font-size: 11px;">🔀 SHUFFLE</button>
+          </div>
+
+          <!-- Tracklist -->
+          <div class="brutalist-card song-row" style="padding: 8px 10px; margin-bottom: 6px;">
+            <span style="font-weight: 900; font-size: 12px; width: 20px;">1</span>
+            <div class="song-meta">
+              <div class="song-title">Prelude</div>
+              <div class="song-sub">Kavinsky</div>
+            </div>
+            <span class="song-dur">01:54</span>
+          </div>
+
+          <div class="brutalist-card song-row" style="padding: 8px 10px; margin-bottom: 6px; background: var(--primary);">
+            <span style="font-weight: 900; font-size: 12px; width: 20px; color: var(--accent);">▶</span>
+            <div class="song-meta">
+              <div class="song-title">Blizzard (Electronic)</div>
+              <div class="song-sub">Kavinsky</div>
+            </div>
+            <span class="song-dur">03:28</span>
+          </div>
+
+          <div class="brutalist-card song-row" style="padding: 8px 10px; margin-bottom: 6px;">
+            <span style="font-weight: 900; font-size: 12px; width: 20px;">3</span>
+            <div class="song-meta">
+              <div class="song-title">Protovision</div>
+              <div class="song-sub">Kavinsky</div>
+            </div>
+            <span class="song-dur">03:26</span>
+          </div>
+
+          <div class="brutalist-card song-row" style="padding: 8px 10px; margin-bottom: 6px;">
+            <span style="font-weight: 900; font-size: 12px; width: 20px;">4</span>
+            <div class="song-meta">
+              <div class="song-title">Odd Look</div>
+              <div class="song-sub">Kavinsky feat. The Weeknd</div>
+            </div>
+            <span class="song-dur">04:12</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    function toggleTheme() {
+      document.body.classList.toggle('dark-theme');
+      const btn = document.getElementById('themeToggle');
+      if (document.body.classList.contains('dark-theme')) {
+        btn.textContent = '☀️ TOGGLE LIGHT MODE';
+      } else {
+        btn.textContent = '🌓 TOGGLE DARK MODE';
+      }
+    }
+
+    function setLayout(mode) {
+      const canvas = document.getElementById('canvas');
+      canvas.className = 'canvas-container';
+      if (mode === 'grid') {
+        canvas.classList.add('grid-view');
+      } else if (mode === 'vertical') {
+        canvas.classList.add('vertical-stitch');
+      }
+      
+      document.querySelectorAll('.controls-row .btn').forEach(b => {
+        if (!b.id.includes('themeToggle')) b.classList.remove('active');
+      });
+      event.target.classList.add('active');
+    }
+  </script>
+</body>
+</html>

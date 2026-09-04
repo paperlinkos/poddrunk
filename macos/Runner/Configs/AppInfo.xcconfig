@@ -8,7 +8,7 @@
 PRODUCT_NAME = poddrunk
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.poddrunk.poddrunk
+PRODUCT_BUNDLE_IDENTIFIER = com.neobrutalism.poddrunk.poddrunk
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2026 com.poddrunk. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2026 com.neobrutalism.poddrunk. All rights reserved.

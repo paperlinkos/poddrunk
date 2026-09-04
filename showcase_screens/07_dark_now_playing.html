@@ -1,0 +1,312 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+
+  :root {
+    --primary: #F7CE46;
+    --accent: #FF5722;
+    --border: #2E2E36;
+    --canvas: #0C0C0E;
+    --card-bg: #18181C;
+    --text: #F4F4F6;
+    --muted: #8E8E98;
+    --shadow-color: #000000;
+  }
+
+
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, sans-serif; -webkit-font-smoothing: antialiased; }
+  
+  body {
+    width: 390px;
+    height: 844px;
+    background: var(--canvas);
+    color: var(--text);
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Status Bar */
+  .status-bar {
+    height: 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 28px 0 28px;
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--text);
+    z-index: 100;
+    flex-shrink: 0;
+  }
+  .dynamic-island {
+    width: 110px;
+    height: 28px;
+    background: #000;
+    border-radius: 20px;
+    position: absolute;
+    top: 10px;
+    left: calc(50% - 55px);
+  }
+
+  .content-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 8px 16px 20px 16px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .brutalist-card {
+    background: var(--card-bg);
+    border: 2px solid var(--border);
+    box-shadow: 3.5px 3.5px 0 var(--shadow-color);
+    border-radius: 6px;
+    padding: 12px;
+  }
+
+  .btn {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 900;
+    border: 2px solid var(--border);
+    box-shadow: 3px 3px 0 var(--shadow-color);
+    border-radius: 4px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .btn-primary { background: var(--primary); color: #111; }
+  .btn-accent { background: var(--accent); color: #fff; }
+  .btn-card { background: var(--card-bg); color: var(--text); }
+
+.player-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0 10px 0;
+}
+.player-header h2 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 16px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+}
+.cassette-box {
+  width: 100%;
+  height: 200px;
+  background: #121215;
+  border: 3.5px solid #2E2E36;
+  box-shadow: 6px 6px 0 #000;
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  color: #fff;
+  margin: 8px 0 18px 0;
+}
+.cassette-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #222;
+  padding-bottom: 6px;
+}
+.cassette-tag {
+  background: #F7CE46;
+  color: #111;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 900;
+  font-size: 11px;
+  padding: 3px 8px;
+  border: 1.5px solid #000;
+  border-radius: 3px;
+}
+.spool-window {
+  background: #1C1C22;
+  border: 2.5px solid #2E2E36;
+  border-radius: 8px;
+  height: 74px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 28px;
+  position: relative;
+}
+.spool-window::before {
+  content: '';
+  position: absolute;
+  width: 52px;
+  height: 18px;
+  background: #FF5722;
+  border: 1.5px solid #000;
+  border-radius: 3px;
+  z-index: 1;
+}
+.spool {
+  width: 46px;
+  height: 46px;
+  background: #2A2A32;
+  border: 3px solid #F7CE46;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+}
+.spool::after {
+  content: '';
+  width: 16px;
+  height: 16px;
+  background: #000;
+  border: 2px solid #F7CE46;
+  border-radius: 50%;
+}
+.scrubber-bar {
+  width: 100%;
+  height: 8px;
+  background: rgba(255,255,255,0.12);
+  border: 1.5px solid #2E2E36;
+  border-radius: 4px;
+  position: relative;
+  margin: 14px 0 6px 0;
+}
+.scrubber-fill {
+  width: 44%;
+  height: 100%;
+  background: #FF5722;
+  border-radius: 2px;
+  position: relative;
+}
+.scrubber-thumb {
+  width: 18px;
+  height: 18px;
+  background: #F7CE46;
+  border: 2px solid #000;
+  box-shadow: 1.5px 1.5px 0 #000;
+  border-radius: 50%;
+  position: absolute;
+  right: -9px;
+  top: -6px;
+}
+.engine-badge {
+  background: #18181C;
+  border: 2px solid #2E2E36;
+  box-shadow: 3.5px 3.5px 0 #000;
+  border-radius: 6px;
+  padding: 12px 14px;
+  margin: 18px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.engine-num {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 900;
+  font-size: 16px;
+  color: #FF5722;
+  background: rgba(255, 87, 34, 0.15);
+  padding: 4px 8px;
+  border: 1.5px solid #FF5722;
+  border-radius: 4px;
+}
+.controls-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+}
+.ctrl-btn {
+  width: 48px;
+  height: 48px;
+  background: #18181C;
+  border: 2px solid #2E2E36;
+  box-shadow: 3px 3px 0 #000;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 900;
+  color: #fff;
+}
+.ctrl-btn.play {
+  width: 62px;
+  height: 62px;
+  background: #F7CE46;
+  color: #111;
+  font-size: 26px;
+  border-color: #000;
+}
+</style>
+</head>
+<body>
+  <div class="dynamic-island"></div>
+  <div class="status-bar"><span>9:41</span><span>●●● 5G</span></div>
+  <div class="content-area">
+    <div class="player-header">
+      <span style="font-size: 18px; font-weight: 900;">⌄</span>
+      <h2>NOW PLAYING</h2>
+      <div style="display: flex; gap: 8px; align-items: center;">
+        <span class="btn btn-primary" style="padding: 2px 6px; font-size: 10px;">EQ</span>
+        <span style="font-size: 18px; font-weight: 900;">•••</span>
+      </div>
+    </div>
+
+    <div class="cassette-box">
+      <div class="cassette-top">
+        <span class="cassette-tag">PODDRUNK • SIDE A</span>
+        <span style="font-size: 10px; font-weight: 800; opacity: 0.7;">HIGH BIAS 90</span>
+      </div>
+      <div class="spool-window">
+        <div class="spool"></div>
+        <div class="spool"></div>
+      </div>
+      <div style="display: flex; justify-content: space-between; font-size: 9px; font-weight: 900; opacity: 0.7;">
+        <span>INDEX: 024</span>
+        <span>OBSIDIAN AUDIO ENGINE</span>
+      </div>
+    </div>
+
+    <div style="text-align: center; margin: 4px 0 8px 0;">
+      <div style="font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 900; color: #F4F4F6;">Midnight Tokyo Drift</div>
+      <div style="font-size: 13px; font-weight: 700; color: #8E8E98; margin-top: 3px;">Kavinsky • OutRun (2024)</div>
+    </div>
+
+    <div class="scrubber-bar">
+      <div class="scrubber-fill"><div class="scrubber-thumb"></div></div>
+    </div>
+    <div style="display: flex; justify-content: space-between; font-size: 11px; font-weight: 800; color: #8E8E98;">
+      <span>01:48</span>
+      <span>04:18</span>
+    </div>
+
+    <div class="engine-badge">
+      <div>
+        <div style="font-family: 'Space Grotesk', sans-serif; font-size: 11px; font-weight: 900; letter-spacing: 0.8px;">COUNTED REPEAT ENGINE</div>
+        <div style="font-size: 11px; font-weight: 700; color: #8E8E98; margin-top: 1px;">Finite Loop Protection Active</div>
+      </div>
+      <div class="engine-num">🔁 3 / 5</div>
+    </div>
+
+    <div class="controls-row">
+      <div class="ctrl-btn">🔀</div>
+      <div class="ctrl-btn">⏮</div>
+      <div class="ctrl-btn play">▶</div>
+      <div class="ctrl-btn">⏭</div>
+      <div class="ctrl-btn">🔁</div>
+    </div>
+  </div>
+</body>
+</html>
