@@ -58,11 +58,11 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
   @override
   Widget build(BuildContext context) {
-    // Only one splash page exists: always the light mode version across all themes
-    const backgroundColor = NeoBrutalistColors.lightCanvas;
-    const borderColor = NeoBrutalistColors.lightBorder;
-    const primaryColor = NeoBrutalistColors.lightPrimary;
-    const textColor = NeoBrutalistColors.lightText;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final backgroundColor = isDark ? NeoBrutalistColors.darkCanvas : NeoBrutalistColors.lightCanvas;
+    final borderColor = isDark ? NeoBrutalistColors.darkBorder : NeoBrutalistColors.lightBorder;
+    final primaryColor = isDark ? NeoBrutalistColors.darkPrimary : NeoBrutalistColors.lightPrimary;
+    final textColor = isDark ? NeoBrutalistColors.darkText : NeoBrutalistColors.lightText;
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -87,10 +87,10 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                   color: primaryColor,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(color: borderColor, width: 3.5),
-                  boxShadow: const [
+                  boxShadow: [
                     BoxShadow(
                       color: borderColor,
-                      offset: Offset(6, 6),
+                      offset: const Offset(6, 6),
                       blurRadius: 0,
                     ),
                   ],
