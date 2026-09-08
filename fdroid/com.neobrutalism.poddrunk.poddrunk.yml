@@ -14,7 +14,7 @@ Repo: https://github.com/paperlinkos/poddrunk.git
 Builds:
   - versionName: 1.1.0
     versionCode: 2
-    commit: 004f84e3a0b5f137eb13c32e098fe11b8b64e0ee
+    commit: 235fcc964cf2734517419359378613b9ad87a38c
     output: build/app/outputs/flutter-apk/app-release.apk
     srclibs:
       - flutter@stable
