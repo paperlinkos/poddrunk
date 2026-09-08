@@ -8,10 +8,11 @@ import '../../../core/widgets/brutalist_card.dart';
 import '../../audio/domain/models/track_model.dart';
 import '../../audio/providers/audio_player_provider.dart';
 import '../../player/screens/now_playing_screen.dart';
-import '../../queue/providers/queue_provider.dart';
 import '../widgets/track_options_bottom_sheet.dart';
 
-enum CollectionType { album, artist }
+import '../providers/history_provider.dart';
+
+enum CollectionType { album, artist, recentlyAdded, recentlyPlayed }
 
 class CollectionDetailScreen extends ConsumerWidget {
   final String title;
@@ -28,14 +29,15 @@ class CollectionDetailScreen extends ConsumerWidget {
   });
 
   String _formatDuration(Duration d) {
-    final minutes = d.inMinutes;
+    final hours = d.inHours.toString().padLeft(2, '0');
+    final minutes = (d.inMinutes % 60).toString().padLeft(2, '0');
     final seconds = (d.inSeconds % 60).toString().padLeft(2, '0');
-    return '$minutes:$seconds';
+    return '$hours:$minutes:$seconds';
   }
 
-  String _getTotalDuration() {
+  String _getTotalDuration(List<TrackModel> trackList) {
     int totalMs = 0;
-    for (var t in tracks) {
+    for (var t in trackList) {
       totalMs += t.duration.inMilliseconds;
     }
     final d = Duration(milliseconds: totalMs);
@@ -58,6 +60,35 @@ class CollectionDetailScreen extends ConsumerWidget {
     final textColor = isDark ? NeoBrutalistColors.darkText : NeoBrutalistColors.lightText;
 
     final playerState = ref.watch(audioPlayerProvider);
+    final activeTracks = type == CollectionType.recentlyPlayed
+        ? ref.watch(historyProvider).recentlyPlayed
+        : tracks;
+
+    String appBarTitle;
+    IconData badgeIcon;
+    Color badgeColor;
+    switch (type) {
+      case CollectionType.album:
+        appBarTitle = 'ALBUM';
+        badgeIcon = Icons.album;
+        badgeColor = primaryColor;
+        break;
+      case CollectionType.artist:
+        appBarTitle = 'ARTIST';
+        badgeIcon = Icons.person;
+        badgeColor = primaryColor;
+        break;
+      case CollectionType.recentlyAdded:
+        appBarTitle = 'RECENTLY ADDED';
+        badgeIcon = Icons.auto_awesome;
+        badgeColor = primaryColor;
+        break;
+      case CollectionType.recentlyPlayed:
+        appBarTitle = 'RECENTLY PLAYED';
+        badgeIcon = Icons.history;
+        badgeColor = accentColor;
+        break;
+    }
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -65,7 +96,7 @@ class CollectionDetailScreen extends ConsumerWidget {
         backgroundColor: isDark ? NeoBrutalistColors.darkHeaderBg : primaryColor,
         elevation: 0,
         title: Text(
-          type == CollectionType.album ? 'ALBUM' : 'ARTIST',
+          appBarTitle,
           style: GoogleFonts.spaceGrotesk(
             fontWeight: FontWeight.w900,
             fontSize: 16,
@@ -76,6 +107,45 @@ class CollectionDetailScreen extends ConsumerWidget {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).pop(),
         ),
+        actions: [
+          if (type == CollectionType.recentlyPlayed && activeTracks.isNotEmpty)
+            IconButton(
+              tooltip: 'CLEAR HISTORY',
+              icon: const Icon(Icons.delete_sweep),
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (ctx) => AlertDialog(
+                    backgroundColor: cardBg,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(NeoBrutalistTheme.borderRadius),
+                      side: BorderSide(color: borderColor, width: NeoBrutalistTheme.borderWidth),
+                    ),
+                    title: const Text('CLEAR PLAYBACK HISTORY?', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16)),
+                    content: const Text(
+                      'This will remove all songs from your Recently Played history.',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.of(ctx).pop(),
+                        child: const Text('CANCEL', style: TextStyle(fontWeight: FontWeight.bold)),
+                      ),
+                      BrutalistButton(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                        backgroundColor: Colors.red,
+                        onPressed: () {
+                          ref.read(historyProvider.notifier).clearHistory();
+                          Navigator.of(ctx).pop();
+                        },
+                        child: const Text('CLEAR', style: TextStyle(fontWeight: FontWeight.w900, color: Colors.white)),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+        ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(2.0),
           child: Container(color: borderColor, height: NeoBrutalistTheme.borderWidth),
@@ -103,7 +173,7 @@ class CollectionDetailScreen extends ConsumerWidget {
                       width: 72,
                       height: 72,
                       decoration: BoxDecoration(
-                        color: primaryColor,
+                        color: badgeColor,
                         borderRadius: BorderRadius.circular(type == CollectionType.artist ? 36 : 8),
                         border: Border.all(color: borderColor, width: 2.0),
                         boxShadow: [
@@ -116,8 +186,8 @@ class CollectionDetailScreen extends ConsumerWidget {
                       ),
                       child: Center(
                         child: Icon(
-                          type == CollectionType.album ? Icons.album : Icons.person,
-                          size: 40,
+                          badgeIcon,
+                          size: 38,
                           color: Colors.black,
                         ),
                       ),
@@ -148,7 +218,7 @@ class CollectionDetailScreen extends ConsumerWidget {
                             const SizedBox(height: 4),
                           ],
                           Text(
-                            '${tracks.length} TRACKS • ${_getTotalDuration()}',
+                            '${activeTracks.length} TRACKS • ${_getTotalDuration(activeTracks)}',
                             style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.w800,
@@ -168,12 +238,12 @@ class CollectionDetailScreen extends ConsumerWidget {
                     Expanded(
                       child: BrutalistButton(
                         backgroundColor: primaryColor,
-                        onPressed: tracks.isEmpty
+                        onPressed: activeTracks.isEmpty
                             ? null
                             : () {
                                 ref.read(audioPlayerProvider.notifier).playTrack(
-                                      tracks.first,
-                                      queue: tracks,
+                                      activeTracks.first,
+                                      queue: activeTracks,
                                       index: 0,
                                     );
                                 showModalBottomSheet(
@@ -198,15 +268,15 @@ class CollectionDetailScreen extends ConsumerWidget {
                     Expanded(
                       child: BrutalistButton(
                         backgroundColor: cardBg,
-                        onPressed: tracks.isEmpty
+                        onPressed: activeTracks.isEmpty
                             ? null
                             : () {
+                                final shuffled = List<TrackModel>.from(activeTracks)..shuffle();
                                 ref.read(audioPlayerProvider.notifier).playTrack(
-                                      tracks.first,
-                                      queue: tracks,
+                                      shuffled.first,
+                                      queue: shuffled,
                                       index: 0,
                                     );
-                                ref.read(queueProvider.notifier).toggleShuffle();
                                 showModalBottomSheet(
                                   context: context,
                                   isScrollControlled: true,
@@ -233,18 +303,36 @@ class CollectionDetailScreen extends ConsumerWidget {
 
           // Track List
           Expanded(
-            child: tracks.isEmpty
+            child: activeTracks.isEmpty
                 ? Center(
-                    child: Text(
-                      'NO SONGS FOUND',
-                      style: TextStyle(fontWeight: FontWeight.w900, color: textColor.withValues(alpha: 0.5)),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          type == CollectionType.recentlyPlayed
+                              ? Icons.history
+                              : Icons.music_off,
+                          size: 48,
+                          color: textColor.withValues(alpha: 0.4),
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          type == CollectionType.recentlyPlayed
+                              ? 'NO PLAYED SONGS YET'
+                              : 'NO SONGS FOUND',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w900,
+                            color: textColor.withValues(alpha: 0.6),
+                          ),
+                        ),
+                      ],
                     ),
                   )
                 : ListView.builder(
                     padding: const EdgeInsets.only(left: 12, right: 12, bottom: 90, top: 8),
-                    itemCount: tracks.length,
+                    itemCount: activeTracks.length,
                     itemBuilder: (context, index) {
-                      final track = tracks[index];
+                      final track = activeTracks[index];
                       final isPlayingCurrent = playerState.currentTrack?.id == track.id;
 
                       return BrutalistCard(
@@ -259,7 +347,7 @@ class CollectionDetailScreen extends ConsumerWidget {
                         onTap: () {
                           ref.read(audioPlayerProvider.notifier).playTrack(
                                 track,
-                                queue: tracks,
+                                queue: activeTracks,
                                 index: index,
                               );
                           showModalBottomSheet(
@@ -274,7 +362,7 @@ class CollectionDetailScreen extends ConsumerWidget {
                           TrackOptionsBottomSheet.show(
                             context,
                             track: track,
-                            queue: tracks,
+                            queue: activeTracks,
                             index: index,
                           );
                         },
@@ -334,7 +422,7 @@ class CollectionDetailScreen extends ConsumerWidget {
                                 TrackOptionsBottomSheet.show(
                                   context,
                                   track: track,
-                                  queue: tracks,
+                                  queue: activeTracks,
                                   index: index,
                                 );
                               },

@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:audio_service/audio_service.dart';
+import 'package:audio_session/audio_session.dart';
 import 'package:just_audio/just_audio.dart';
 import '../domain/models/track_model.dart';
 
@@ -18,9 +19,55 @@ Future<PoddrunkAudioHandler> initAudioService() async {
 
 class PoddrunkAudioHandler extends BaseAudioHandler with SeekHandler {
   final AudioPlayer player = AudioPlayer();
+  bool _playInterrupted = false;
 
   PoddrunkAudioHandler() {
     _init();
+    _initAudioSession();
+  }
+
+  Future<void> _initAudioSession() async {
+    try {
+      final session = await AudioSession.instance;
+      await session.configure(const AudioSessionConfiguration.music());
+
+      // Auto-pause and auto-resume on transient focus changes (reels, calls, notifications)
+      session.interruptionEventStream.listen((event) {
+        if (event.begin) {
+          switch (event.type) {
+            case AudioInterruptionType.duck:
+            case AudioInterruptionType.pause:
+            case AudioInterruptionType.unknown:
+              if (player.playing) {
+                _playInterrupted = true;
+                player.pause();
+              }
+              break;
+          }
+        } else {
+          switch (event.type) {
+            case AudioInterruptionType.duck:
+            case AudioInterruptionType.pause:
+              if (_playInterrupted) {
+                _playInterrupted = false;
+                player.play();
+              }
+              break;
+            case AudioInterruptionType.unknown:
+              break;
+          }
+        }
+      });
+
+      // Handle headphones or Bluetooth unplugged / disconnected
+      session.becomingNoisyEventStream.listen((_) {
+        if (player.playing) {
+          player.pause();
+        }
+      });
+    } catch (e) {
+      debugPrint('AudioSession init error: $e');
+    }
   }
 
   void _init() {
@@ -94,6 +141,7 @@ class PoddrunkAudioHandler extends BaseAudioHandler with SeekHandler {
       } else {
         await player.setUrl(track.uri);
       }
+      _playInterrupted = false;
       await player.play();
     } catch (e, st) {
       debugPrint('PoddrunkAudioHandler error playing ${track.title}: $e\n$st');
@@ -102,16 +150,26 @@ class PoddrunkAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   @override
-  Future<void> play() => player.play();
+  Future<void> play() {
+    _playInterrupted = false;
+    return player.play();
+  }
 
   @override
-  Future<void> pause() => player.pause();
+  Future<void> pause() {
+    _playInterrupted = false;
+    return player.pause();
+  }
 
   @override
   Future<void> stop() async {
+    _playInterrupted = false;
     await player.stop();
     await super.stop();
   }
+
+  @override
+  Future<void> setSpeed(double speed) => player.setSpeed(speed);
 
   @override
   Future<void> seek(Duration position) => player.seek(position);

@@ -6,6 +6,7 @@ import '../domain/models/track_model.dart';
 import 'counted_repeat_provider.dart';
 import 'sleep_timer_provider.dart';
 import '../../queue/providers/queue_provider.dart';
+import '../../library/providers/history_provider.dart';
 
 class AudioPlayerState {
   final TrackModel? currentTrack;
@@ -146,6 +147,9 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState> {
       position: Duration.zero,
       duration: track.duration,
     );
+
+    // Record in recently played history
+    _ref.read(historyProvider.notifier).recordTrack(track);
 
     try {
       if (_handler != null) {

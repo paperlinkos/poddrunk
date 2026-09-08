@@ -28,7 +28,7 @@ class _RetroCassetteWidgetState extends State<RetroCassetteWidget> with SingleTi
     super.initState();
     _rotationController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 4),
+      duration: const Duration(milliseconds: 1400),
     );
     if (widget.isPlaying) {
       _rotationController.repeat();

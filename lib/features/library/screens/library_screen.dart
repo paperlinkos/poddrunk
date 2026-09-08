@@ -13,7 +13,10 @@ import '../../playlists/domain/models/playlist_model.dart';
 import '../../playlists/screens/playlist_detail_screen.dart';
 import '../widgets/track_options_bottom_sheet.dart';
 import '../widgets/weather_badge.dart';
+import '../providers/history_provider.dart';
 import 'collection_detail_screen.dart';
+
+enum SongFilterType { all, recentlyAdded, recentlyPlayed }
 
 class LibraryScreen extends ConsumerStatefulWidget {
   const LibraryScreen({super.key});
@@ -25,6 +28,7 @@ class LibraryScreen extends ConsumerStatefulWidget {
 class _LibraryScreenState extends ConsumerState<LibraryScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final TextEditingController _searchController = TextEditingController();
+  SongFilterType _songFilter = SongFilterType.all;
 
   @override
   void initState() {
@@ -40,9 +44,10 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> with SingleTicker
   }
 
   String _formatDuration(Duration d) {
-    final minutes = d.inMinutes;
+    final hours = d.inHours.toString().padLeft(2, '0');
+    final minutes = (d.inMinutes % 60).toString().padLeft(2, '0');
     final seconds = (d.inSeconds % 60).toString().padLeft(2, '0');
-    return '$minutes:$seconds';
+    return '$hours:$minutes:$seconds';
   }
 
   void _showCreatePlaylistDialog() {
@@ -342,6 +347,25 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> with SingleTicker
     final primaryColor = isDark ? NeoBrutalistColors.darkPrimary : NeoBrutalistColors.lightPrimary;
     final borderColor = isDark ? NeoBrutalistColors.darkBorder : NeoBrutalistColors.lightBorder;
 
+    final historyState = ref.watch(historyProvider);
+    final historyTracks = historyState.recentlyPlayed;
+    int historyTotalMs = 0;
+    for (var t in historyTracks) {
+      historyTotalMs += t.duration.inMilliseconds;
+    }
+    final historyDuration = Duration(milliseconds: historyTotalMs);
+
+    final allTracks = ref.watch(libraryProvider).tracks;
+    final recentlyAddedTracks = allTracks.take(50).toList();
+    int addedTotalMs = 0;
+    for (var t in recentlyAddedTracks) {
+      addedTotalMs += t.duration.inMilliseconds;
+    }
+    final addedDuration = Duration(milliseconds: addedTotalMs);
+
+    final favorites = playlists.where((p) => p.id == 'favorites').toList();
+    final customPlaylists = playlists.where((p) => p.id != 'favorites').toList();
+
     return ListView(
       padding: const EdgeInsets.only(left: 12, right: 12, bottom: 90, top: 4),
       children: [
@@ -363,27 +387,223 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> with SingleTicker
         ),
         const SizedBox(height: 12),
 
-        if (playlists.isEmpty)
+        // Section Title: SMART PLAYLISTS
+        Padding(
+          padding: const EdgeInsets.only(left: 2, bottom: 6),
+          child: Text(
+            'SMART COLLECTIONS',
+            style: TextStyle(
+              fontWeight: FontWeight.w900,
+              fontSize: 11,
+              letterSpacing: 1.0,
+              color: textColor.withValues(alpha: 0.6),
+            ),
+          ),
+        ),
+
+        // 1. Favorites Playlist Card
+        if (favorites.isNotEmpty) ...[
+          BrutalistCard(
+            margin: const EdgeInsets.only(bottom: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (ctx) => PlaylistDetailScreen(playlistId: favorites.first.id),
+                ),
+              );
+            },
+            child: Row(
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    borderRadius: BorderRadius.circular(4),
+                    border: Border.all(color: borderColor, width: 1.2),
+                  ),
+                  child: const Center(
+                    child: Icon(Icons.favorite, color: Colors.white, size: 24),
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        favorites.first.name,
+                        style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        '${favorites.first.tracks.length} SONGS • ${_formatDuration(favorites.first.totalDuration)}',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          color: textColor.withValues(alpha: 0.6),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.more_vert),
+                  onPressed: () => _showPlaylistOptions(favorites.first),
+                ),
+              ],
+            ),
+          ),
+        ],
+
+        // 2. Recently Played Smart Collection Card
+        BrutalistCard(
+          margin: const EdgeInsets.only(bottom: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (ctx) => CollectionDetailScreen(
+                  title: 'RECENTLY PLAYED',
+                  subtitle: 'YOUR PLAYBACK HISTORY',
+                  tracks: historyTracks,
+                  type: CollectionType.recentlyPlayed,
+                ),
+              ),
+            );
+          },
+          child: Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: isDark ? NeoBrutalistColors.darkAccent : NeoBrutalistColors.lightAccent,
+                  borderRadius: BorderRadius.circular(4),
+                  border: Border.all(color: borderColor, width: 1.2),
+                ),
+                child: const Center(
+                  child: Icon(Icons.history, color: Colors.black, size: 24),
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'RECENTLY PLAYED',
+                      style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '${historyTracks.length} SONGS • ${_formatDuration(historyDuration)}',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: textColor.withValues(alpha: 0.6),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right),
+            ],
+          ),
+        ),
+
+        // 3. Recently Added Smart Collection Card
+        BrutalistCard(
+          margin: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (ctx) => CollectionDetailScreen(
+                  title: 'RECENTLY ADDED',
+                  subtitle: 'LATEST SCANNED TRACKS',
+                  tracks: recentlyAddedTracks,
+                  type: CollectionType.recentlyAdded,
+                ),
+              ),
+            );
+          },
+          child: Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: primaryColor,
+                  borderRadius: BorderRadius.circular(4),
+                  border: Border.all(color: borderColor, width: 1.2),
+                ),
+                child: const Center(
+                  child: Icon(Icons.auto_awesome, color: Colors.black, size: 24),
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'RECENTLY ADDED',
+                      style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '${recentlyAddedTracks.length} SONGS • ${_formatDuration(addedDuration)}',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: textColor.withValues(alpha: 0.6),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right),
+            ],
+          ),
+        ),
+
+        // Section Title: USER PLAYLISTS
+        Padding(
+          padding: const EdgeInsets.only(left: 2, bottom: 6),
+          child: Text(
+            'USER PLAYLISTS',
+            style: TextStyle(
+              fontWeight: FontWeight.w900,
+              fontSize: 11,
+              letterSpacing: 1.0,
+              color: textColor.withValues(alpha: 0.6),
+            ),
+          ),
+        ),
+
+        if (customPlaylists.isEmpty)
           Center(
             child: Padding(
-              padding: const EdgeInsets.all(32.0),
+              padding: const EdgeInsets.all(24.0),
               child: Column(
                 children: [
-                  const Icon(Icons.queue_music, size: 48),
-                  const SizedBox(height: 12),
-                  const Text('NO PLAYLISTS YET', style: TextStyle(fontWeight: FontWeight.w900)),
-                  const SizedBox(height: 6),
+                  const Icon(Icons.queue_music, size: 36),
+                  const SizedBox(height: 8),
+                  const Text('NO CUSTOM PLAYLISTS', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13)),
+                  const SizedBox(height: 4),
                   Text(
-                    'Create your first playlist and start organizing your audio collection.',
+                    'Create custom playlists using the button above.',
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 12, color: textColor.withValues(alpha: 0.6)),
+                    style: TextStyle(fontSize: 11, color: textColor.withValues(alpha: 0.6)),
                   ),
                 ],
               ),
             ),
           )
         else
-          ...playlists.map((playlist) {
+          ...customPlaylists.map((playlist) {
             return BrutalistCard(
               margin: const EdgeInsets.only(bottom: 8),
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -400,14 +620,14 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> with SingleTicker
                     width: 44,
                     height: 44,
                     decoration: BoxDecoration(
-                      color: playlist.id == 'favorites' ? Colors.red : primaryColor,
+                      color: primaryColor,
                       borderRadius: BorderRadius.circular(4),
                       border: Border.all(color: borderColor, width: 1.2),
                     ),
                     child: Center(
                       child: Icon(
-                        playlist.id == 'favorites' ? Icons.favorite : Icons.queue_music,
-                        color: playlist.id == 'favorites' ? Colors.white : textColor,
+                        Icons.queue_music,
+                        color: textColor,
                         size: 24,
                       ),
                     ),
@@ -445,9 +665,74 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> with SingleTicker
     );
   }
 
-  Widget _buildSongsList(List<TrackModel> tracks) {
-    if (tracks.isEmpty) {
-      final libraryState = ref.watch(libraryProvider);
+  Widget _buildFilterChip({
+    required String label,
+    required int count,
+    required IconData icon,
+    required SongFilterType filter,
+  }) {
+    final isSelected = _songFilter == filter;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final borderColor = isDark ? NeoBrutalistColors.darkBorder : NeoBrutalistColors.lightBorder;
+    final accentColor = isDark ? NeoBrutalistColors.darkAccent : NeoBrutalistColors.lightAccent;
+    final cardBg = isDark ? NeoBrutalistColors.darkCardBg : NeoBrutalistColors.lightCardBg;
+    final textColor = isDark ? NeoBrutalistColors.darkText : NeoBrutalistColors.lightText;
+
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _songFilter = filter;
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
+        decoration: BoxDecoration(
+          color: isSelected ? accentColor : cardBg,
+          borderRadius: BorderRadius.circular(4),
+          border: Border.all(
+            color: borderColor,
+            width: isSelected ? 2.0 : 1.2,
+          ),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: isDark ? Colors.black : borderColor,
+                    offset: const Offset(2, 2),
+                    blurRadius: 0,
+                  ),
+                ]
+              : null,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              size: 13,
+              color: isSelected ? Colors.black : textColor,
+            ),
+            const SizedBox(width: 4),
+            Flexible(
+              child: Text(
+                '$label ($count)',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontWeight: FontWeight.w900,
+                  fontSize: 10.5,
+                  color: isSelected ? Colors.black : textColor,
+                  letterSpacing: 0.3,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptySongFilterState(SongFilterType type, bool hasPermission) {
+    if (!hasPermission) {
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
@@ -456,25 +741,17 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> with SingleTicker
             children: [
               const Icon(Icons.music_off, size: 48),
               const SizedBox(height: 12),
-              Text(
-                libraryState.hasPermission
-                    ? 'NO LOCAL TRACKS FOUND ON DEVICE'
-                    : 'DEVICE STORAGE ACCESS REQUIRED',
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14),
-              ),
+              const Text('DEVICE STORAGE ACCESS REQUIRED', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14)),
               const SizedBox(height: 8),
-              Text(
-                libraryState.hasPermission
-                    ? 'Add audio files (.mp3, .m4a, .wav, .flac) to your device storage.'
-                    : 'Grant permission so Poddrunk can index and play offline songs on your phone.',
+              const Text(
+                'Grant storage permission to index and play offline songs on your phone.',
                 textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 12, color: Colors.grey),
+                style: TextStyle(fontSize: 12, color: Colors.grey),
               ),
               const SizedBox(height: 16),
               BrutalistButton(
                 onPressed: () => ref.read(libraryProvider.notifier).scanAudioLibrary(),
-                child: Text(libraryState.hasPermission ? 'RESCAN STORAGE' : 'GRANT PERMISSION'),
+                child: const Text('GRANT PERMISSION'),
               ),
             ],
           ),
@@ -482,125 +759,246 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> with SingleTicker
       );
     }
 
-    return ListView.builder(
-      padding: const EdgeInsets.only(left: 12, right: 12, bottom: 90),
-      itemCount: tracks.length,
-      itemBuilder: (context, index) {
-        final track = tracks[index];
-        final isPlayingCurrent = ref.watch(audioPlayerProvider).currentTrack?.id == track.id;
+    String title;
+    String subtitle;
+    IconData icon;
 
-        return BrutalistCard(
-          margin: const EdgeInsets.only(bottom: 8.0),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          backgroundColor: isPlayingCurrent
-              ? (Theme.of(context).brightness == Brightness.dark
-                  ? NeoBrutalistColors.darkPrimary.withValues(alpha: 0.15)
-                  : NeoBrutalistColors.lightPrimary)
-              : null,
-          onTap: () {
-            ref.read(audioPlayerProvider.notifier).playTrack(
-                  track,
-                  queue: tracks,
-                  index: index,
-                );
-            showModalBottomSheet(
-              context: context,
-              isScrollControlled: true,
-              useSafeArea: true,
-              backgroundColor: Colors.transparent,
-              builder: (ctx) => const NowPlayingScreen(),
-            );
-          },
-          onLongPress: () {
-            TrackOptionsBottomSheet.show(
-              context,
-              track: track,
-              queue: tracks,
-              index: index,
-            );
-          },
+    switch (type) {
+      case SongFilterType.all:
+        title = 'NO TRACKS FOUND';
+        subtitle = 'Add audio files (.mp3, .m4a, .wav, .flac) to your device storage.';
+        icon = Icons.music_off;
+        break;
+      case SongFilterType.recentlyAdded:
+        title = 'NO RECENTLY ADDED TRACKS';
+        subtitle = 'New songs added to your device will show up here.';
+        icon = Icons.auto_awesome;
+        break;
+      case SongFilterType.recentlyPlayed:
+        title = 'NO PLAYED TRACKS YET';
+        subtitle = 'Songs you listen to will automatically appear in your playback history.';
+        icon = Icons.history;
+        break;
+    }
+
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 44, color: Colors.grey),
+            const SizedBox(height: 12),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              subtitle,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 12, color: Colors.grey),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSongsList(List<TrackModel> tracks) {
+    final libraryState = ref.watch(libraryProvider);
+    final historyState = ref.watch(historyProvider);
+    final historyTracks = historyState.recentlyPlayed;
+
+    // Apply active search query to recently played list if searching
+    final q = libraryState.searchQuery.toLowerCase().trim();
+    final filteredHistory = q.isEmpty
+        ? historyTracks
+        : historyTracks.where((t) =>
+            t.title.toLowerCase().contains(q) ||
+            t.artist.toLowerCase().contains(q) ||
+            t.album.toLowerCase().contains(q)
+          ).toList();
+
+    final recentlyAddedTracks = tracks.take(50).toList();
+
+    List<TrackModel> activeTracks;
+    switch (_songFilter) {
+      case SongFilterType.all:
+        activeTracks = tracks;
+        break;
+      case SongFilterType.recentlyAdded:
+        activeTracks = recentlyAddedTracks;
+        break;
+      case SongFilterType.recentlyPlayed:
+        activeTracks = filteredHistory;
+        break;
+    }
+
+    return Column(
+      children: [
+        // Horizontal Filter Chips Row
+        Padding(
+          padding: const EdgeInsets.only(left: 12, right: 12, bottom: 8),
           child: Row(
             children: [
-              // Track Icon
-              Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: isPlayingCurrent
-                      ? (Theme.of(context).brightness == Brightness.dark
-                          ? NeoBrutalistColors.darkPrimary
-                          : NeoBrutalistColors.lightAccent)
-                      : Theme.of(context).primaryColor,
-                  border: Border.all(
-                    color: Theme.of(context).brightness == Brightness.dark
-                        ? NeoBrutalistColors.darkBorder
-                        : NeoBrutalistColors.lightBorder,
-                    width: 1.2,
-                  ),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Center(
-                  child: Icon(
-                    isPlayingCurrent ? Icons.graphic_eq : Icons.music_note,
-                    size: 18,
-                    color: Colors.black,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      track.title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w900,
-                        fontSize: 14,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      '${track.artist} • ${track.album}',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.grey,
-                      ),
-                    ),
-                  ],
+                child: _buildFilterChip(
+                  label: 'ALL',
+                  count: tracks.length,
+                  icon: Icons.library_music,
+                  filter: SongFilterType.all,
                 ),
               ),
               const SizedBox(width: 8),
-              Text(
-                _formatDuration(track.duration),
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 12,
+              Expanded(
+                child: _buildFilterChip(
+                  label: 'ADDED',
+                  count: recentlyAddedTracks.length,
+                  icon: Icons.auto_awesome,
+                  filter: SongFilterType.recentlyAdded,
                 ),
               ),
-              const SizedBox(width: 4),
-              IconButton(
-                icon: const Icon(Icons.more_vert, size: 20),
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-                onPressed: () {
-                  TrackOptionsBottomSheet.show(
-                    context,
-                    track: track,
-                    queue: tracks,
-                    index: index,
-                  );
-                },
+              const SizedBox(width: 8),
+              Expanded(
+                child: _buildFilterChip(
+                  label: 'PLAYED',
+                  count: historyTracks.length,
+                  icon: Icons.history,
+                  filter: SongFilterType.recentlyPlayed,
+                ),
               ),
             ],
           ),
-        );
-      },
+        ),
+
+        // List or Empty State
+        Expanded(
+          child: activeTracks.isEmpty
+              ? _buildEmptySongFilterState(_songFilter, libraryState.hasPermission)
+              : ListView.builder(
+                  padding: const EdgeInsets.only(left: 12, right: 12, bottom: 90),
+                  itemCount: activeTracks.length,
+                  itemBuilder: (context, index) {
+                    final track = activeTracks[index];
+                    final isPlayingCurrent = ref.watch(audioPlayerProvider).currentTrack?.id == track.id;
+
+                    return BrutalistCard(
+                      margin: const EdgeInsets.only(bottom: 8.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                      backgroundColor: isPlayingCurrent
+                          ? (Theme.of(context).brightness == Brightness.dark
+                              ? NeoBrutalistColors.darkPrimary.withValues(alpha: 0.15)
+                              : NeoBrutalistColors.lightPrimary)
+                          : null,
+                      onTap: () {
+                        ref.read(audioPlayerProvider.notifier).playTrack(
+                              track,
+                              queue: activeTracks,
+                              index: index,
+                            );
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          useSafeArea: true,
+                          backgroundColor: Colors.transparent,
+                          builder: (ctx) => const NowPlayingScreen(),
+                        );
+                      },
+                      onLongPress: () {
+                        TrackOptionsBottomSheet.show(
+                          context,
+                          track: track,
+                          queue: activeTracks,
+                          index: index,
+                        );
+                      },
+                      child: Row(
+                        children: [
+                          // Track Icon
+                          Container(
+                            width: 36,
+                            height: 36,
+                            decoration: BoxDecoration(
+                              color: isPlayingCurrent
+                                  ? (Theme.of(context).brightness == Brightness.dark
+                                      ? NeoBrutalistColors.darkPrimary
+                                      : NeoBrutalistColors.lightAccent)
+                                  : Theme.of(context).primaryColor,
+                              border: Border.all(
+                                color: Theme.of(context).brightness == Brightness.dark
+                                    ? NeoBrutalistColors.darkBorder
+                                    : NeoBrutalistColors.lightBorder,
+                                width: 1.2,
+                              ),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Center(
+                              child: Icon(
+                                isPlayingCurrent ? Icons.graphic_eq : Icons.music_note,
+                                size: 18,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  track.title,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w900,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  '${track.artist} • ${track.album}',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            _formatDuration(track.duration),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          IconButton(
+                            icon: const Icon(Icons.more_vert, size: 20),
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                            onPressed: () {
+                              TrackOptionsBottomSheet.show(
+                                context,
+                                track: track,
+                                queue: activeTracks,
+                                index: index,
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+        ),
+      ],
     );
   }
 

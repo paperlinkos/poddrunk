@@ -1,0 +1,4 @@
+• Added smart "Recently Added" and "Recently Played" collections with instant filter chips
+• Added audio focus auto-resume and "Becoming Noisy" protection for headphone/Bluetooth disconnects
+• Standardized track duration display across all screens to full HH:MM:SS format
+• Enhanced cassette reel rotation speed and tactile Neo-Brutalist button depth physics
