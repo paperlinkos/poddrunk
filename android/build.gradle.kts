@@ -19,20 +19,31 @@ subprojects {
     project.evaluationDependsOn(":app")
 }
 
-fun configureNamespace(p: Project) {
+fun configureSubproject(p: Project) {
     if (p.plugins.hasPlugin("com.android.library")) {
         val androidExt = p.extensions.findByType(com.android.build.gradle.LibraryExtension::class.java)
-        if (androidExt != null && androidExt.namespace == null) {
-            androidExt.namespace = "com.poddrunk.plugin." + p.name.replace("-", "_")
+        if (androidExt != null) {
+            if (androidExt.namespace == null) {
+                androidExt.namespace = "com.poddrunk.plugin." + p.name.replace("-", "_")
+            }
+            androidExt.compileOptions {
+                sourceCompatibility = JavaVersion.VERSION_17
+                targetCompatibility = JavaVersion.VERSION_17
+            }
+        }
+    }
+    p.tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class.java).configureEach {
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
         }
     }
 }
 
 subprojects {
     if (state.executed) {
-        configureNamespace(this)
+        configureSubproject(this)
     } else {
-        afterEvaluate { configureNamespace(this) }
+        afterEvaluate { configureSubproject(this) }
     }
 }
 

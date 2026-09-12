@@ -1,0 +1,3 @@
+- Fix JVM target compatibility for Java 21 / modern Gradle builds.
+- Configure Java 17 and KotlinCompile target compatibility across all subprojects.
+- Prevent compilation failures during automated package builds.
