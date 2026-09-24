@@ -21,6 +21,14 @@ subprojects {
 
 fun configureSubproject(p: Project) {
     if (p.plugins.hasPlugin("com.android.library")) {
+        val manifestFile = p.file("src/main/AndroidManifest.xml")
+        if (manifestFile.exists()) {
+            val content = manifestFile.readText()
+            if (content.contains("package=")) {
+                val updated = content.replace(Regex("""package\s*=\s*"[^"]*""""), "")
+                manifestFile.writeText(updated)
+            }
+        }
         val androidExt = p.extensions.findByType(com.android.build.gradle.LibraryExtension::class.java)
         if (androidExt != null) {
             if (androidExt.namespace == null) {

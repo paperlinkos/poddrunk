@@ -1,0 +1,3 @@
+• Resolved Android Gradle Plugin 8+ library manifest namespace compatibility.
+• Fixed Android build pipeline compilation for audio query plugins under OpenJDK 21.
+• General performance and stability enhancements for local media indexing.
