@@ -12,9 +12,9 @@ RepoType: git
 Repo: https://github.com/paperlinkos/poddrunk.git
 
 Builds:
-  - versionName: 1.1.1
-    versionCode: 3
-    commit: a6dd2943f59cc7078ec3b9c3ae476161a16ef684
+  - versionName: 1.1.2
+    versionCode: 4
+    commit: 3c07fd5b24b4fbcbd87489af164a7a6effdd023c
     output: build/app/outputs/flutter-apk/app-release.apk
     srclibs:
       - flutter@stable
@@ -30,6 +30,7 @@ Builds:
       - export PUB_CACHE=$(pwd)/.pub-cache
       - $$flutter$$/bin/flutter config --no-analytics
       - $$flutter$$/bin/flutter pub get --enforce-lockfile
+      - find .pub-cache -name "AndroidManifest.xml" -exec sed -i -E 's/package="[^"]*"//g' {} +
     scandelete:
       - .pub-cache
     build:
@@ -39,5 +40,6 @@ Builds:
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
 UpdateCheckData: pubspec.yaml|version:\s.+\+(\d+)|.|version:\s(.+)\+
-CurrentVersion: 1.1.1
-CurrentVersionCode: 3
+CurrentVersion: 1.1.2
+CurrentVersionCode: 4
+
