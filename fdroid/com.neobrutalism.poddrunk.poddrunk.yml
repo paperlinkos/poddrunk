@@ -30,7 +30,8 @@ Builds:
       - export PUB_CACHE=$(pwd)/.pub-cache
       - $$flutter$$/bin/flutter config --no-analytics
       - $$flutter$$/bin/flutter pub get --enforce-lockfile
-      - find .pub-cache -name "AndroidManifest.xml" -exec sed -i -E 's/package="[^"]*"//g' {} +
+      - find .pub-cache -name "AndroidManifest.xml" -exec sed -i -E 's/package="[^"]*"//g'
+        {} +
     scandelete:
       - .pub-cache
     build:
