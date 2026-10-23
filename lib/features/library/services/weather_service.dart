@@ -19,24 +19,73 @@ class LiveWeatherData {
 }
 
 class WeatherService {
+  static const String defaultEndpoint = 'https://api.open-meteo.com/v1/forecast';
   static LiveWeatherData? _cached;
   static DateTime? _lastFetchTime;
+  static String? _cachedEndpoint;
+
+  /// Clears the in-memory weather cache.
+  static void clearCache() {
+    _cached = null;
+    _lastFetchTime = null;
+    _cachedEndpoint = null;
+  }
+
+  /// Builds a normalized Open-Meteo query URI supporting custom hosts and endpoints.
+  static Uri buildOpenMeteoUri(String rawEndpoint, double lat, double lon) {
+    var ep = rawEndpoint.trim();
+    if (ep.isEmpty) {
+      ep = defaultEndpoint;
+    }
+    if (!ep.startsWith('http://') && !ep.startsWith('https://')) {
+      ep = 'https://$ep';
+    }
+    final parsed = Uri.parse(ep);
+    var path = parsed.path;
+    if (path.isEmpty || path == '/') {
+      path = '/v1/forecast';
+    }
+    return parsed.replace(
+      path: path,
+      queryParameters: {
+        'latitude': lat.toString(),
+        'longitude': lon.toString(),
+        'current': 'temperature_2m,wind_speed_10m,weather_code',
+      },
+    );
+  }
 
   /// Fetches real-time weather from Open-Meteo using IP geolocation.
+  /// If [onlineEnabled] is false, immediately returns ambient time-of-day weather.
+  /// If [customEndpoint] is provided, queries that instance URL instead of default.
   /// Falls back to ambient time-of-day condition on connection failure.
-  static Future<LiveWeatherData> fetchWeather() async {
-    // Return cached if fetched within the last 15 minutes
+  static Future<LiveWeatherData> fetchWeather({
+    bool? onlineEnabled,
+    String? customEndpoint,
+  }) async {
+    // If onlineEnabled is explicitly false, return offline ambient weather immediately
+    if (onlineEnabled == false) {
+      return getAmbientWeather();
+    }
+
+    final endpoint = (customEndpoint != null && customEndpoint.trim().isNotEmpty)
+        ? customEndpoint.trim()
+        : defaultEndpoint;
+
+    // Return cached if fetched within the last 15 minutes for the same endpoint
     if (_cached != null &&
         _lastFetchTime != null &&
+        _cachedEndpoint == endpoint &&
         DateTime.now().difference(_lastFetchTime!).inMinutes < 15) {
       return _cached!;
     }
 
     try {
       final (lat, lon) = await _getCoordinatesFromIp();
-      final weather = await _fetchOpenMeteo(lat, lon);
+      final weather = await _fetchOpenMeteo(lat, lon, endpoint: endpoint);
       _cached = weather;
       _lastFetchTime = DateTime.now();
+      _cachedEndpoint = endpoint;
       return weather;
     } catch (_) {
       // Fallback to ambient offline weather
@@ -82,11 +131,13 @@ class WeatherService {
     throw Exception('Could not determine IP coordinates');
   }
 
-  static Future<LiveWeatherData> _fetchOpenMeteo(double lat, double lon) async {
+  static Future<LiveWeatherData> _fetchOpenMeteo(
+    double lat,
+    double lon, {
+    required String endpoint,
+  }) async {
     final client = HttpClient()..connectionTimeout = const Duration(seconds: 4);
-    final url = Uri.parse(
-      'https://api.open-meteo.com/v1/forecast?latitude=$lat&longitude=$lon&current=temperature_2m,wind_speed_10m,weather_code',
-    );
+    final url = buildOpenMeteoUri(endpoint, lat, lon);
 
     final request = await client.getUrl(url);
     final response = await request.close().timeout(const Duration(seconds: 4));

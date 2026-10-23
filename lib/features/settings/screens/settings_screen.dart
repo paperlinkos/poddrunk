@@ -129,6 +129,54 @@ class SettingsScreen extends ConsumerWidget {
 
           const SizedBox(height: 24),
 
+          // Section: Weather & Ambient Service
+          _buildSectionHeader(context, 'AMBIENT WEATHER & OPEN-METEO'),
+          const SizedBox(height: 8),
+          BrutalistCard(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: Column(
+              children: [
+                SwitchListTile(
+                  secondary: Icon(
+                    settingsState.enableOnlineWeather ? Icons.cloud_outlined : Icons.cloud_off_outlined,
+                  ),
+                  title: const Text(
+                    'ONLINE WEATHER FETCHING',
+                    style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13),
+                  ),
+                  subtitle: const Text(
+                    'Fetch live temperature and wind speed via Open-Meteo. When disabled, operates 100% offline using ambient conditions.',
+                    style: TextStyle(fontSize: 11),
+                  ),
+                  value: settingsState.enableOnlineWeather,
+                  onChanged: (val) {
+                    settingsNotifier.setEnableOnlineWeather(val);
+                  },
+                ),
+                if (settingsState.enableOnlineWeather) ...[
+                  Divider(color: borderColor, height: 1),
+                  ListTile(
+                    leading: const Icon(Icons.dns_outlined),
+                    title: const Text(
+                      'OPEN-METEO INSTANCE URL',
+                      style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13),
+                    ),
+                    subtitle: Text(
+                      settingsState.openMeteoEndpoint,
+                      style: const TextStyle(fontSize: 11),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    trailing: const Icon(Icons.edit_outlined, size: 18),
+                    onTap: () => _showCustomEndpointDialog(context, ref, settingsState.openMeteoEndpoint),
+                  ),
+                ],
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 24),
+
           // Section: App Info
           _buildSectionHeader(context, 'APP INFO'),
           const SizedBox(height: 8),
@@ -140,11 +188,87 @@ class SettingsScreen extends ConsumerWidget {
                 SizedBox(height: 4),
                 Text('Offline Music & Audio Player', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
                 SizedBox(height: 12),
-                Text('Version 1.0.0 • 100% Offline & Ad-Free', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                Text('Version 1.1.3 • 100% Offline Capable & Ad-Free', style: TextStyle(fontSize: 12, color: Colors.grey)),
               ],
             ),
           ),
           const SizedBox(height: 100),
+        ],
+      ),
+    );
+  }
+
+  void _showCustomEndpointDialog(BuildContext context, WidgetRef ref, String currentEndpoint) {
+    final controller = TextEditingController(text: currentEndpoint);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final borderColor = isDark ? NeoBrutalistColors.darkBorder : NeoBrutalistColors.lightBorder;
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          side: BorderSide(color: borderColor, width: NeoBrutalistTheme.borderWidth),
+          borderRadius: BorderRadius.circular(4),
+        ),
+        title: const Text(
+          'OPEN-METEO INSTANCE',
+          style: TextStyle(fontWeight: FontWeight.w900, fontSize: 15),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Specify a custom self-hosted Open-Meteo instance endpoint or use the public default:',
+              style: TextStyle(fontSize: 12),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: controller,
+              style: const TextStyle(fontSize: 13),
+              decoration: InputDecoration(
+                hintText: 'https://api.open-meteo.com/v1/forecast',
+                isDense: true,
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(color: borderColor, width: NeoBrutalistTheme.borderWidth),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: borderColor, width: NeoBrutalistTheme.borderWidth),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              ref.read(settingsProvider.notifier).resetOpenMeteoEndpoint();
+              Navigator.of(ctx).pop();
+            },
+            child: const Text('RESET DEFAULT'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('CANCEL'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: NeoBrutalistColors.lightPrimary,
+              foregroundColor: Colors.black,
+              side: BorderSide(color: borderColor, width: NeoBrutalistTheme.borderWidth),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+            ),
+            onPressed: () {
+              final newEndpoint = controller.text.trim();
+              if (newEndpoint.isNotEmpty) {
+                ref.read(settingsProvider.notifier).setOpenMeteoEndpoint(newEndpoint);
+              }
+              Navigator.of(ctx).pop();
+            },
+            child: const Text('SAVE', style: TextStyle(fontWeight: FontWeight.w900)),
+          ),
         ],
       ),
     );

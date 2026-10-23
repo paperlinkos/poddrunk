@@ -1,0 +1,3 @@
+• Added user-configurable Open-Meteo instance endpoint in Settings for self-hosters.
+• Added dedicated toggle to disable online weather fetching for 100% offline operation.
+• Enhanced ambient offline weather mode and cache handling.

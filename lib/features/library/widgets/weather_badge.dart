@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../core/theme/neo_brutalist_theme.dart';
+import '../../settings/providers/settings_provider.dart';
 import '../services/weather_service.dart';
 
-class WeatherBadge extends StatefulWidget {
+class WeatherBadge extends ConsumerStatefulWidget {
   const WeatherBadge({super.key});
 
   @override
-  State<WeatherBadge> createState() => _WeatherBadgeState();
+  ConsumerState<WeatherBadge> createState() => _WeatherBadgeState();
 }
 
-class _WeatherBadgeState extends State<WeatherBadge> {
+class _WeatherBadgeState extends ConsumerState<WeatherBadge> {
   late LiveWeatherData _weather;
   bool _isLoading = false;
 
@@ -26,7 +28,11 @@ class _WeatherBadgeState extends State<WeatherBadge> {
   Future<void> _loadLiveWeather() async {
     if (_isLoading) return;
     setState(() => _isLoading = true);
-    final data = await WeatherService.fetchWeather();
+    final settings = ref.read(settingsProvider);
+    final data = await WeatherService.fetchWeather(
+      onlineEnabled: settings.enableOnlineWeather,
+      customEndpoint: settings.openMeteoEndpoint,
+    );
     if (mounted) {
       setState(() {
         _weather = data;
@@ -37,6 +43,12 @@ class _WeatherBadgeState extends State<WeatherBadge> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<SettingsState>(settingsProvider, (previous, next) {
+      if (previous?.enableOnlineWeather != next.enableOnlineWeather ||
+          previous?.openMeteoEndpoint != next.openMeteoEndpoint) {
+        _loadLiveWeather();
+      }
+    });
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final borderColor = isDark ? NeoBrutalistColors.darkBorder : NeoBrutalistColors.lightBorder;
     final textColor = isDark ? NeoBrutalistColors.darkText : NeoBrutalistColors.lightText;
@@ -52,7 +64,9 @@ class _WeatherBadgeState extends State<WeatherBadge> {
       onTap: _loadLiveWeather,
       borderRadius: BorderRadius.circular(4),
       child: Tooltip(
-        message: '${_weather.condition} • Tap to refresh live weather',
+        message: _weather.isLive
+            ? '${_weather.condition} • Live via Open-Meteo (tap to refresh)'
+            : '${_weather.condition} • Offline ambient weather (tap to refresh)',
         child: Container(
           margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),

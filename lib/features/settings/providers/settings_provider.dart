@@ -2,22 +2,32 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../library/services/weather_service.dart';
+
 class SettingsState {
   final int seekIntervalSeconds; // 10, 15, 30, 60
   final ThemeMode themeMode;
+  final bool enableOnlineWeather;
+  final String openMeteoEndpoint;
 
   const SettingsState({
     this.seekIntervalSeconds = 30,
     this.themeMode = ThemeMode.system,
+    this.enableOnlineWeather = true,
+    this.openMeteoEndpoint = WeatherService.defaultEndpoint,
   });
 
   SettingsState copyWith({
     int? seekIntervalSeconds,
     ThemeMode? themeMode,
+    bool? enableOnlineWeather,
+    String? openMeteoEndpoint,
   }) {
     return SettingsState(
       seekIntervalSeconds: seekIntervalSeconds ?? this.seekIntervalSeconds,
       themeMode: themeMode ?? this.themeMode,
+      enableOnlineWeather: enableOnlineWeather ?? this.enableOnlineWeather,
+      openMeteoEndpoint: openMeteoEndpoint ?? this.openMeteoEndpoint,
     );
   }
 }
@@ -29,12 +39,16 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
 
   static const String _keySeek = 'poddrunk_seek_interval';
   static const String _keyTheme = 'poddrunk_theme_mode';
+  static const String _keyOnlineWeather = 'poddrunk_online_weather';
+  static const String _keyOpenMeteoEndpoint = 'poddrunk_open_meteo_endpoint';
 
   Future<void> _loadSettings() async {
     final prefs = await SharedPreferences.getInstance();
     final seek = prefs.getInt(_keySeek) ?? 30;
     final themeIdx = prefs.getInt(_keyTheme) ?? 0;
-    
+    final onlineWeather = prefs.getBool(_keyOnlineWeather) ?? true;
+    final openMeteoEndpoint = prefs.getString(_keyOpenMeteoEndpoint) ?? WeatherService.defaultEndpoint;
+
     ThemeMode mode;
     switch (themeIdx) {
       case 1:
@@ -50,6 +64,8 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
     state = SettingsState(
       seekIntervalSeconds: seek,
       themeMode: mode,
+      enableOnlineWeather: onlineWeather,
+      openMeteoEndpoint: openMeteoEndpoint,
     );
   }
 
@@ -66,6 +82,25 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
     if (mode == ThemeMode.light) idx = 1;
     if (mode == ThemeMode.dark) idx = 2;
     await prefs.setInt(_keyTheme, idx);
+  }
+
+  Future<void> setEnableOnlineWeather(bool enabled) async {
+    WeatherService.clearCache();
+    state = state.copyWith(enableOnlineWeather: enabled);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_keyOnlineWeather, enabled);
+  }
+
+  Future<void> setOpenMeteoEndpoint(String endpoint) async {
+    final normalized = endpoint.trim().isEmpty ? WeatherService.defaultEndpoint : endpoint.trim();
+    WeatherService.clearCache();
+    state = state.copyWith(openMeteoEndpoint: normalized);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_keyOpenMeteoEndpoint, normalized);
+  }
+
+  Future<void> resetOpenMeteoEndpoint() async {
+    await setOpenMeteoEndpoint(WeatherService.defaultEndpoint);
   }
 }
 
