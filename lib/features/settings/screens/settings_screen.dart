@@ -188,7 +188,7 @@ class SettingsScreen extends ConsumerWidget {
                 SizedBox(height: 4),
                 Text('Offline Music & Audio Player', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
                 SizedBox(height: 12),
-                Text('Version 1.1.3 • 100% Offline Capable & Ad-Free', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                Text('Version 1.1.4 • 100% Offline Capable & Ad-Free', style: TextStyle(fontSize: 12, color: Colors.grey)),
               ],
             ),
           ),

@@ -8,7 +8,7 @@
 ---
 
 ## 📥 Download
-- **GitHub Direct**: [Download Latest APK (v1.1.3)](https://github.com/paperlinkos/poddrunk/releases/latest)
+- **GitHub Direct**: [Download Latest APK (v1.1.4)](https://github.com/paperlinkos/poddrunk/releases/latest)
 - **F-Droid**: Inclusion in progress ([MR !47790](https://gitlab.com/fdroid/fdroiddata/-/merge_requests/47790))
 
 ---

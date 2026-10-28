@@ -1,0 +1,3 @@
+• Added ABI split build configurations (ARM64, ARMv7, x86_64) reducing app install size by over 60%.
+• Implemented per-architecture version code offsets for seamless device targeting.
+• F-Droid repository integration and build metadata updates.
